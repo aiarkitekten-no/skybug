@@ -1,0 +1,434 @@
+/* ====================================
+   SkyBug Programs - Card-Based Program Styling  
+   ====================================== */
+
+/* == PROGRAMS PAGE LAYOUT == */
+.skybug-programs-wrapper {
+  min-height: calc(100vh - 160px);
+  background: var(--bg-primary);
+  padding: var(--spacing-6) 0;
+}
+
+.skybug-programs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-8);
+  gap: var(--spacing-4);
+}
+
+@media (max-width: 768px) {
+  .skybug-programs-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+  }
+}
+
+.skybug-programs-title-group h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.skybug-programs-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* == FILTERS & SEARCH == */
+.skybug-programs-controls {
+  display: flex;
+  gap: var(--spacing-4);
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .skybug-programs-controls {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+.skybug-search-input {
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  min-width: 250px;
+  transition: all var(--transition-fast);
+}
+
+.skybug-search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-subtle);
+}
+
+.skybug-filter-select {
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.skybug-filter-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* == PROGRAMS GRID == */
+.skybug-programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+@media (max-width: 400px) {
+  .skybug-programs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* == PROGRAM CARD == */
+.skybug-program-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  position: relative;
+}
+
+.skybug-program-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* == PROGRAM CARD HEADER == */
+.skybug-program-card-header {
+  padding: var(--spacing-6);
+  position: relative;
+}
+
+.skybug-program-card-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--spacing-6);
+  right: var(--spacing-6);
+  height: 1px;
+  background: var(--border);
+}
+
+.skybug-program-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.skybug-program-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-md);
+  background: var(--primary-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.skybug-program-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* == PROGRAM CARD STATS == */
+.skybug-program-stats {
+  padding: var(--spacing-5) var(--spacing-6);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-4);
+}
+
+.skybug-program-stat {
+  text-align: center;
+}
+
+.skybug-program-stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--spacing-1) 0;
+  line-height: 1;
+}
+
+.skybug-program-stat-value.bugs {
+  color: var(--error);
+}
+
+.skybug-program-stat-value.features {
+  color: var(--info);
+}
+
+.skybug-program-stat-value.resolved {
+  color: var(--success);
+}
+
+.skybug-program-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* == PROGRAM CARD STATUS == */
+.skybug-program-status {
+  padding: var(--spacing-4) var(--spacing-6) var(--spacing-5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-secondary);
+}
+
+.skybug-program-health {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.skybug-health-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+}
+
+.skybug-health-dot.good {
+  background: var(--success);
+}
+
+.skybug-health-dot.warning {
+  background: var(--warning);
+}
+
+.skybug-health-dot.critical {
+  background: var(--error);
+}
+
+.skybug-health-text {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.skybug-health-text.good {
+  color: var(--success);
+}
+
+.skybug-health-text.warning {
+  color: var(--warning);
+}
+
+.skybug-health-text.critical {
+  color: var(--error);
+}
+
+.skybug-program-actions {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.skybug-program-action {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-xs);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.skybug-program-action:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-subtle);
+  text-decoration: none;
+}
+
+.skybug-program-action-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* == EMPTY STATE == */
+.skybug-empty-state {
+  text-align: center;
+  padding: var(--spacing-12) var(--spacing-6);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  margin: var(--spacing-8) 0;
+}
+
+.skybug-empty-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-4);
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: var(--font-size-2xl);
+}
+
+.skybug-empty-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.skybug-empty-message {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-6) 0;
+}
+
+/* == PAGINATION == */
+.skybug-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-8);
+}
+
+.skybug-pagination-button {
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.skybug-pagination-button:hover:not(.disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.skybug-pagination-button.active {
+  background: var(--primary);
+  color: var(--text-inverse);
+  border-color: var(--primary);
+}
+
+.skybug-pagination-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.skybug-pagination-info {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin: 0 var(--spacing-4);
+}
+
+/* == LOADING STATES == */
+.skybug-program-card.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.skybug-loading-skeleton {
+  background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* == RESPONSIVE DESIGN == */
+@media (max-width: 768px) {
+  .skybug-programs-wrapper {
+    padding: var(--spacing-4) 0;
+  }
+  
+  .skybug-programs-title-group h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .skybug-programs-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  
+  .skybug-search-input {
+    min-width: 200px;
+  }
+  
+  .skybug-program-stats {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: var(--spacing-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .skybug-programs-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .skybug-search-input,
+  .skybug-filter-select {
+    min-width: unset;
+    width: 100%;
+  }
+  
+  .skybug-program-card-header,
+  .skybug-program-stats,
+  .skybug-program-status {
+    padding-left: var(--spacing-4);
+    padding-right: var(--spacing-4);
+  }
+}

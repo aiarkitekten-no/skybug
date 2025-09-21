@@ -1,0 +1,22 @@
+/* SkyBug Bugs Page Modern UI */
+.skybug-bugs-toolbar { --chip-bg:#f1f3f5; --chip-active:#1d72b8; }
+.skybug-bugs-toolbar .skybug-chip { border:0; background:var(--chip-bg); padding:6px 12px; border-radius:20px; cursor:pointer; font-size:12px; line-height:1; display:flex; align-items:center; gap:4px; }
+.skybug-bugs-toolbar .skybug-chip.active { background:var(--chip-active); color:#fff; box-shadow:0 2px 4px rgba(0,0,0,.1); }
+#skybug-search { border:1px solid #ccd0d4; border-radius:6px; padding:6px 10px; }
+#skybug-priority-filter { border:1px solid #ccd0d4; border-radius:6px; padding:6px 8px; }
+.skybug-bug-grid { position:relative; }
+.skybug-bug-card { background:#fff; border:1px solid #e2e6ea; border-radius:10px; padding:14px 14px 12px; display:flex; flex-direction:column; gap:4px; position:relative; box-shadow:0 1px 2px rgba(0,0,0,.04); transition:.18s box-shadow,.18s transform; }
+.skybug-bug-card:hover { box-shadow:0 4px 10px rgba(0,0,0,.08); transform:translateY(-2px); }
+.skybug-mini-action { background:#f1f3f5; border:0; padding:4px 6px; border-radius:6px; cursor:pointer; font-size:14px; line-height:1; display:inline-flex; align-items:center; justify-content:center; }
+.skybug-mini-action:hover { background:#e2e6ea; }
+.skybug-bug-card[data-status="skybug_resolved"] { border-color:#20c99733; }
+.skybug-bug-card[data-status="skybug_in_progress"] { border-color:#fd7e1433; }
+.skybug-bug-card[data-status="skybug_waiting"] { border-color:#ffc10755; }
+.skybug-bug-card[data-status="skybug_closed"] { opacity:.65; }
+.skybug-bug-card h3 a { color:#1e1e1e; }
+.skybug-bug-card h3 a:hover { text-decoration:underline; }
+.skybug-bug-grid.empty::before { content:attr(data-empty-label); position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; color:#6c757d; }
+.skybug-recent-emails-box ul li:last-child { border-bottom:0 !important; }
+@media (prefers-color-scheme: dark) { .skybug-recent-emails-box { background:#1f2225 !important; border-color:#2c3136 !important; } }
+@media (max-width: 1100px) { .skybug-bug-grid { grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); } }
+@media (prefers-color-scheme: dark) { .skybug-bug-card { background:#1f2225; border-color:#2c3136; } .skybug-bugs-toolbar .skybug-chip { background:#2c3136; color:#cfd5db; } .skybug-bugs-toolbar .skybug-chip.active { background:#0d6efd; } #skybug-search,#skybug-priority-filter { background:#1f2225; color:#e2e6ea; border-color:#343a40; } .skybug-mini-action { background:#2c3136; color:#d9dee3; } .skybug-mini-action:hover { background:#3a4046; } .skybug-bug-card h3 a { color:#e2e6ea; } }

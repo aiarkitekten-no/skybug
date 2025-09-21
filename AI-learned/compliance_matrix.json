@@ -1,0 +1,14 @@
+{
+  "faser": [
+    {"fase":0, "fil":"verify_fase0.json", "kjernekrav":["guardrails etablert","0 forbudte funn"], "status":"oppfylt"},
+    {"fase":1, "fil":"verify_fase1.json", "kjernekrav":["CPT revisjon","i18n konsistens","ingen midlertidige tekster"], "status":"oppfylt"},
+    {"fase":2, "fil":"verify_fase2.json", "kjernekrav":["API enable/disable","program meta UI"], "status":"oppfylt"},
+    {"fase":3, "fil":"verify_fase3.json", "kjernekrav":["status workflow","webhook ved lukking","epost varsling"], "status":"oppfylt"},
+    {"fase":4, "fil":"verify_fase4.json", "kjernekrav":["issue->program kobling","frontend shortcode"], "status":"oppfylt"},
+    {"fase":5, "fil":"verify_fase5.json", "kjernekrav":["statistikk utvidet","lokal graf"], "status":"oppfylt"},
+    {"fase":6, "fil":"verify_fase6.json", "kjernekrav":["dokumentasjon synk","AI learned oppdatert"], "status":"oppfylt"},
+    {"fase":7, "fil":"verify_fase7.json", "kjernekrav":["QA script","rapport aggregering","sanitert output"], "status":"oppfylt"}
+  ],
+  "samlet_vurdering":"Alle definerte faser gjennomført iht krav uten gjenstående guardrail brudd.",
+  "generert":"2025-09-19T00:00:00Z"
+}

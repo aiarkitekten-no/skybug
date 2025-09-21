@@ -1,0 +1,58 @@
+[
+    {
+        "kategori": "Issue-Program Meta Box",
+        "beskrivelse": "Meta-boks for å velge program er implementert",
+        "status": "Implementert",
+        "grunn": "Admin kan manuelt knytte eller endre program til en sak",
+        "prioritet": "Lukket - levert i Fase 4"
+    },
+    {
+        "kategori": "API Key Rotation",
+        "beskrivelse": "Funksjonalitet for å regenerere API nøkler for sikkerhet",
+        "status": "Ikke implementert",
+        "grunn": "Nøkler genereres en gang og brukes permanent - rotation kan være ønskelig",
+        "prioritet": "Lav - kun nødvendig ved sikkerhetshendelser"
+    },
+    {
+        "kategori": "Webhook Implementation",
+        "beskrivelse": "Webhook utsending ved lukking av saker er implementert",
+        "status": "Implementert",
+        "grunn": "Payload sendes ved overgang til skybug_closed",
+        "prioritet": "Lukket - levert i Fase 3"
+    },
+    {
+        "kategori": "Issue Status System",
+        "beskrivelse": "Post status skybug_closed med UI er aktiv",
+        "status": "Implementert",
+        "grunn": "Åpne vs Lukket skiller nå arbeidsflyt og triggere",
+        "prioritet": "Lukket - levert i Fase 3"
+    },
+    {
+        "kategori": "Undermeny Ikoner",
+        "beskrivelse": "CSS for å vise små ikoner ved hver undermeny", 
+        "status": "Ikke implementert",
+        "grunn": "WordPress viser ikke ikoner på undermenyer by default - krever custom CSS",
+        "prioritet": "Lav - kosmetisk forbedring"
+    },
+    {
+        "kategori": "API Rate Limiting",
+        "beskrivelse": "Begrensning på antall API kall per tidsperiode",
+        "status": "Ikke implementert",
+        "grunn": "Kan forhindre spam eller misbruk av API endpoint",
+        "prioritet": "Middels - avhenger av faktisk bruk"
+    },
+    {
+        "kategori": "Bulk Operations",
+        "beskrivelse": "Mulighet for bulk lukking/åpning av saker fra admin lister",
+        "status": "Ikke implementert",
+        "grunn": "WordPress standard bulk operasjoner fungerer ikke med våre custom statuser",
+        "prioritet": "Middels - forbedrer admin effektivitet"
+    },
+    {
+        "kategori": "Email Notifications", 
+        "beskrivelse": "Epostvarsel ved ny sak med konfigurerbar adresse",
+        "status": "Implementert",
+        "grunn": "Varsler teamet umiddelbart om nye saker",
+        "prioritet": "Lukket - levert i Fase 3"
+    }
+]

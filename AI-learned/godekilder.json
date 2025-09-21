@@ -1,0 +1,79 @@
+[
+    {
+        "url": "https://developer.wordpress.org/plugins/administration-menus/",
+        "titel": "WordPress Plugin Administration Menus",
+        "beskrivelse": "Offisiell dokumentasjon for add_menu_page og add_submenu_page funksjoner",
+        "nyttig_fordi": "Gir komplett oversikt over menu API, posisjoner og best practices",
+        "brukt_for": "Implementering av SkyBug hovedmeny med korrekt prioritet"
+    },
+    {
+        "url": "https://developer.wordpress.org/plugins/post-types/",
+        "titel": "WordPress Custom Post Types",
+        "beskrivelse": "Guide til register_post_type og alle tilgjengelige argumenter",
+        "nyttig_fordi": "Forklarer show_in_menu, supports, capabilities og andre viktige parametere",
+        "brukt_for": "Oppretting av Program og Issue post types"
+    },
+    {
+        "url": "https://developer.wordpress.org/rest-api/extending-the-rest-api/adding-custom-endpoints/",
+        "titel": "Adding Custom REST API Endpoints", 
+        "beskrivelse": "Hvordan lage custom REST endpoints i WordPress",
+        "nyttig_fordi": "Dekker register_rest_route, permission callbacks og error handling",
+        "brukt_for": "API endpoint for eksterne bug reports"
+    },
+    {
+        "url": "https://developer.wordpress.org/plugins/metadata/custom-meta-boxes/",
+        "titel": "Custom Meta Boxes",
+        "beskrivelse": "Guide til add_meta_box og save_post hooks",
+        "nyttig_fordi": "Viser nonce validering, capability sjekker og meta lagring",
+        "brukt_for": "API integrasjon meta box på Program post type"
+    },
+    {
+        "url": "https://developer.wordpress.org/plugins/internationalization/",
+        "titel": "WordPress Internationalization",
+        "beskrivelse": "Hvordan gjøre plugins oversettbare med text domains",
+        "nyttig_fordi": "Forklarer __, _e, load_plugin_textdomain og best practices",
+        "brukt_for": "Gjøre hele SkyBug plugin oversettbar til andre språk"
+    },
+    {
+        "url": "https://developer.wordpress.org/plugins/security/",
+        "titel": "WordPress Plugin Security",
+        "beskrivelse": "Sikkerhet best practices for WordPress plugins",
+        "nyttig_fordi": "Dekker nonces, escaping, sanitization og capability checks", 
+        "brukt_for": "Sikre all input/output i SkyBug plugin"
+    },
+    {
+        "url": "https://wordpress.stackexchange.com/questions/8779/how-to-add-a-submenu-link-to-a-custom-post-type-listing",
+        "titel": "StackExchange: Submenu Link to Custom Post Type",
+        "beskrivelse": "Løsning for å koble undermeny til eksisterende CPT liste",
+        "nyttig_fordi": "Viser at 'edit.php?post_type=X' kan brukes som submenu slug",
+        "brukt_for": "Koble Program og Issue undermenyer til WordPress standard lister"
+    },
+    {
+        "url": "https://codex.wordpress.org/Function_Reference/wp_insert_term",
+        "titel": "WordPress wp_insert_term Function",
+        "beskrivelse": "Dokumentasjon for programmatisk opprettelse av taxonomy terms",
+        "nyttig_fordi": "Viser hvordan lage Bug og Feature terms automatisk",
+        "brukt_for": "Opprette standard sakstype terms ved plugin aktivering"
+    },
+    {
+        "url": "https://developer.wordpress.org/reference/functions/register_post_status/",
+        "titel": "register_post_status",
+        "beskrivelse": "Definerer egendefinerte post statuser",
+        "nyttig_fordi": "Forklarer label_count og synlighet i admin",
+        "brukt_for": "Implementasjon av skybug_closed"
+    },
+    {
+        "url": "https://developer.wordpress.org/reference/hooks/transition_post_status/",
+        "titel": "transition_post_status Hook",
+        "beskrivelse": "Hook for å reagere på statusendringer",
+        "nyttig_fordi": "Gir tilgang til gammel og ny status for å trigge webhook",
+        "brukt_for": "Webhook dispatch ved lukking"
+    },
+    {
+        "url": "https://developer.wordpress.org/reference/functions/wp_mail/",
+        "titel": "wp_mail",
+        "beskrivelse": "Sender e-poster fra WordPress",
+        "nyttig_fordi": "Dokumenterer parametere og forventet bruk",
+        "brukt_for": "Epostvarsler ved nye saker"
+    }
+]

@@ -1,0 +1,10 @@
+{
+  "fase": "0",
+  "status": "fullført",
+  "beskrivelse": "Baseline guardrails etablert: languages/, phpcs.xml, phpstan.neon, skanner for forbudte ord, funksjons-ID synk påbegynt.",
+  "funksjoner_talt": 21,
+  "logg_funksjoner": 21,
+  "avvik": [],
+  "placeholder_scan_resultat": {"count":0,"fil":"AI-learned/placeholder_scan_report.json"},
+  "videre": ["Eventuell finpuss lint senere", "Fortsett til Fase 1"]
+}

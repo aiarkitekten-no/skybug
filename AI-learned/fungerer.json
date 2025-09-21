@@ -1,0 +1,86 @@
+[
+    {
+        "kategori": "WordPress Plugin Struktur",
+        "beskrivelse": "WordPress plugin header format med Plugin Name, Description, Version etc. fungerer korrekt",
+        "detaljer": "Standard WordPress plugin header i kommentar-blokk øverst i hovedfilen blir gjenkjent av WordPress",
+        "verifisert": "Plugin vises i admin plugin liste og kan aktiveres"
+    },
+    {
+        "kategori": "Custom Post Types",
+        "beskrivelse": "register_post_type med show_in_menu=false og manuell meny-kobling fungerer perfekt",
+        "detaljer": "Ved å sette show_in_menu=false på CPT og bruke add_submenu_page med 'edit.php?post_type=X' får vi full kontroll over meny plassering",
+        "verifisert": "CPT vises ikke i egen meny men kun under vår plugin-meny"
+    },
+    {
+        "kategori": "Admin Menu Priority",
+        "beskrivelse": "add_menu_page med posisjon 1 plasserer meny øverst før Dashboard",
+        "detaljer": "Posisjon 1 i add_menu_page gir høyeste prioritet og viser plugin-meny som første element",
+        "verifisert": "SkyBug meny vises øverst i WordPress admin sidebar"
+    },
+    {
+        "kategori": "Meta Boxes",
+        "beskrivelse": "add_meta_box kombinert med save_post hook fungerer for lagring av custom felter",
+        "detaljer": "Meta bokser med nonce validering og current_user_can sjekk gir sikker lagring av post meta",
+        "verifisert": "API nøkler og webhook URLer lagres korrekt til post meta"
+    },
+    {
+        "kategori": "REST API Authentication",
+        "beskrivelse": "Custom API nøkkel autentisering via meta_query på post type fungerer effektivt",
+        "detaljer": "Ved å lagre API nøkler som post meta og søke med meta_query kan vi autentisere og identifisere program i samme operasjon",
+        "verifisiert": "API kall med gyldig nøkkel oppretter saker korrekt koblet til riktig program"
+    },
+    {
+        "kategori": "Taxonomy Terms",
+        "beskrivelse": "wp_insert_term med slug og name fungerer for å opprette forhåndsdefinerte terms",
+        "detaljer": "term_exists sjekk før wp_insert_term forhindrer duplikater av Bug og Feature terms",
+        "verifisiert": "Bug og Feature terms opprettes automatisk og kan brukes i sak-kategorisering"
+    },
+    {
+        "kategori": "Admin Columns",
+        "beskrivelse": "manage_posts_columns filter med custom_column action gir tilpassede kolonner i post lister",
+        "detaljer": "Kombinasjon av filter og action hooks lar oss vise API nøkkel, webhook og program info direkte i admin lister",
+        "verifisiert": "Program og Issue lister viser relevant meta data i egne kolonner"
+    },
+    {
+        "kategori": "WordPress Escaping",
+        "beskrivelse": "esc_html__, esc_attr, esc_url kombinert med __ oversettelse fungerer korrekt for sikkerhet",
+        "detaljer": "Konsekvent bruk av escape funktsjoner på all output forhindrer XSS mens oversettelse bevares",
+        "verifisiert": "All tekst output er sikret mot XSS og klar for oversettelse"
+    },
+    {
+        "kategori": "Random API Keys",
+        "beskrivelse": "random_bytes(16) + bin2hex gir sterke 32-karakter API nøkler",
+        "detaljer": "PHP random_bytes genererer kryptografisk sikre tilfeldige bytes som konverteres til hex for lesbarhet",
+        "verifisiert": "Genererte API nøkler har høy entropi og er unike"
+    },
+    {
+        "kategori": "Custom Post Status",
+        "beskrivelse": "register_post_status for skybug_closed vises korrekt i admin og filtreres",
+        "detaljer": "Status liste oppdateres og teller vises med label_count definisjon",
+        "verifisert": "Lukking av sak endrer status og triggere fungerer"
+    },
+    {
+        "kategori": "Webhook Dispatch",
+        "beskrivelse": "transition_post_status hook sender JSON payload ved lukking",
+        "detaljer": "wp_remote_post med timeout og Content-Type application/json",
+        "verifisert": "Payload struktur konsistent (event, issue_id, title, program_id, timestamp)"
+    },
+    {
+        "kategori": "Epostvarsling",
+        "beskrivelse": "publish_skybug_issue hook sender epost når notify email er satt",
+        "detaljer": "Bruker wp_mail med enkel tekstbody og admin edit URL",
+        "verifisert": "Ingen epost sendes når felt tomt"
+    },
+    {
+        "kategori": "Shortcode Dashboard",
+        "beskrivelse": "[skybug-dashboard] lister åpne saker gruppert per program",
+        "detaljer": "Filtrerer bort status skybug_closed og viser tom-melding",
+        "verifisert": "Lukket sak forsvinner fra output umiddelbart"
+    },
+    {
+        "kategori": "Statistikk Graf",
+        "beskrivelse": "Lokal minimal grafmotor visualiserer open vs closed med legend",
+        "detaljer": "SimplePie modul fyller pie basert på blandet dataset",
+        "verifisert": "Tall i tabell samsvarer med grafdata"
+    }
+]

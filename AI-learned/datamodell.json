@@ -1,0 +1,46 @@
+[
+    {
+        "kategori": "Database Schema",
+        "beskrivelse": "Oversikt over hvordan SkyBug lagrer data i WordPress",
+        "struktur": {
+            "post_types": {
+                "skybug_program": "Lagrer program informasjon (navn, beskrivelse)",
+                "skybug_issue": "Lagrer sak informasjon (tittel, beskrivelse, kommentarer)"
+            },
+            "meta_fields": {
+                "_skybug_api_key": "API nøkkel for program (32 hex karakterer)",
+                "_skybug_webhook_url": "Webhook URL for program notifications",
+                "_skybug_program_id": "Kobling fra sak til program (post ID)"
+            },
+            "taxonomies": {
+                "skybug_type": "Sakstype med terms: 'bug' og 'feature'"
+            }
+        },
+        "viktighet": "Kritisk for å forstå datamodellen ved utvidelser"
+    },
+    {
+        "kategori": "API Kontrakt",
+        "beskrivelse": "Spesifikasjon for REST API endpoint",
+        "endpoint": "/wp-json/skybug/v1/report",
+        "method": "POST",
+        "required_fields": {
+            "api_key": "API nøkkel for programmet (string)",
+            "title": "Kort beskrivelse av saken (string)",
+            "description": "Detaljert beskrivelse (string)",
+            "type": "bug eller feature (string)"
+        },
+        "response_format": {
+            "success": {
+                "status": "success",
+                "issue_id": "WordPress post ID for ny sak",
+                "issue_url": "Admin URL til saken"
+            },
+            "error": {
+                "code": "error_code",
+                "message": "Feilmelding",
+                "data": {"status": "HTTP status kode"}
+            }
+        },
+        "viktighet": "Må følges nøye ved API endringer"
+    }
+]

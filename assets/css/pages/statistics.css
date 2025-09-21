@@ -1,0 +1,469 @@
+/* ====================================
+   SkyBug Statistics - Enhanced Chart & Stats Styling
+   ====================================== */
+
+/* == STATISTICS PAGE LAYOUT == */
+.skybug-stats-wrapper {
+  min-height: calc(100vh - 160px);
+  background: var(--bg-primary);
+  padding: var(--spacing-6) 0;
+}
+
+.skybug-stats-header {
+  margin-bottom: var(--spacing-8);
+}
+
+.skybug-stats-title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.skybug-stats-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* == STATS OVERVIEW GRID == */
+.skybug-stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-10);
+}
+
+/* == CHARTS SECTION == */
+.skybug-charts-section {
+  margin-bottom: var(--spacing-10);
+}
+
+.skybug-charts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-6);
+}
+
+.skybug-charts-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.skybug-charts-controls {
+  display: flex;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.skybug-chart-period-selector {
+  display: flex;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.skybug-period-option {
+  padding: var(--spacing-2) var(--spacing-4);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border-right: 1px solid var(--border);
+}
+
+.skybug-period-option:last-child {
+  border-right: none;
+}
+
+.skybug-period-option:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.skybug-period-option.active {
+  background: var(--primary);
+  color: var(--text-inverse);
+}
+
+/* == CHARTS GRID == */
+.skybug-charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+@media (max-width: 1024px) {
+  .skybug-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* == ENHANCED CHART CARDS == */
+.skybug-chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.skybug-chart-header {
+  padding: var(--spacing-5) var(--spacing-6);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skybug-chart-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.skybug-chart-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-md);
+  background: var(--primary-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  font-size: var(--font-size-sm);
+}
+
+.skybug-chart-controls {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.skybug-chart-toggle {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-xs);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.skybug-chart-toggle:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.skybug-chart-toggle.active {
+  background: var(--primary);
+  color: var(--text-inverse);
+  border-color: var(--primary);
+}
+
+.skybug-chart-container {
+  padding: var(--spacing-6);
+  position: relative;
+}
+
+.skybug-chart-main {
+  position: relative;
+  height: 300px;
+  margin-bottom: var(--spacing-4);
+}
+
+.skybug-chart-main.large {
+  height: 400px;
+}
+
+.skybug-chart-main.compact {
+  height: 200px;
+}
+
+.skybug-chart-canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* == CHART LEGENDS & SUMMARY == */
+.skybug-chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--border);
+}
+
+.skybug-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--font-size-sm);
+}
+
+.skybug-legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.skybug-legend-label {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.skybug-chart-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-4);
+  border-top: 1px solid var(--border);
+}
+
+.skybug-summary-stat {
+  text-align: center;
+}
+
+.skybug-summary-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1;
+}
+
+.skybug-summary-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin: var(--spacing-1) 0 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-weight-medium);
+}
+
+/* == DETAILED STATS SECTION == */
+.skybug-detailed-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-8);
+}
+
+.skybug-stats-table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.skybug-stats-table-header {
+  padding: var(--spacing-5) var(--spacing-6);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.skybug-stats-table-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.skybug-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.skybug-stats-table th,
+.skybug-stats-table td {
+  padding: var(--spacing-3) var(--spacing-6);
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.skybug-stats-table th {
+  background: var(--bg-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.skybug-stats-table td {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+}
+
+.skybug-stats-table tbody tr:hover {
+  background: var(--bg-secondary);
+}
+
+.skybug-stats-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* == EXPORT & ACTIONS == */
+.skybug-stats-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-6) 0;
+  border-top: 1px solid var(--border);
+  margin-top: var(--spacing-8);
+}
+
+.skybug-export-group {
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+.skybug-export-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.skybug-export-button:hover {
+  border-color: var(--primary);
+  background: var(--primary-subtle);
+  color: var(--primary-dark);
+  text-decoration: none;
+}
+
+.skybug-export-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.skybug-stats-meta {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+}
+
+/* == LOADING & ERROR STATES == */
+.skybug-chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.skybug-chart-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--error);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.skybug-chart-error-icon {
+  width: 32px;
+  height: 32px;
+  margin-bottom: var(--spacing-2);
+  opacity: 0.6;
+}
+
+/* == RESPONSIVE DESIGN == */
+@media (max-width: 1024px) {
+  .skybug-charts-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+  }
+  
+  .skybug-chart-main {
+    height: 250px;
+  }
+  
+  .skybug-chart-main.large {
+    height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .skybug-stats-wrapper {
+    padding: var(--spacing-4) 0;
+  }
+  
+  .skybug-stats-title {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .skybug-stats-overview,
+  .skybug-detailed-stats {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  
+  .skybug-chart-legend {
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+  
+  .skybug-chart-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .skybug-stats-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .skybug-chart-container {
+    padding: var(--spacing-4);
+  }
+  
+  .skybug-chart-main,
+  .skybug-chart-main.large {
+    height: 200px;
+  }
+  
+  .skybug-period-option {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-xs);
+  }
+  
+  .skybug-stats-table th,
+  .skybug-stats-table td {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-xs);
+  }
+}

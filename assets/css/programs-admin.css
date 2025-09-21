@@ -1,0 +1,107 @@
+/* Programs List & Single Program Modern UI */
+.skybug-modern-page .skybug-program-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-top:8px}
+.skybug-program-card{border:1px solid #e1e4e8;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;position:relative;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:transform 0.2s ease, box-shadow 0.2s ease}
+.skybug-program-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.skybug-program-card h2 a{text-decoration:none;color:#111}
+.skybug-program-card h2 a:hover{text-decoration:underline}
+.skybug-program-card code{font-family:ui-monospace,monospace;font-size:12px}
+.skybug-program-card .skybug-program-feedback{transition:.25s ease;color:#155724}
+
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .skybug-modern-page .skybug-program-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .skybug-program-card {
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .skybug-program-image-section {
+    flex-direction: column !important;
+    text-align: center;
+  }
+  
+  .skybug-program-image-container {
+    width: 48px !important;
+    height: 48px !important;
+  }
+  
+  .skybug-program-card h2 {
+    font-size: 16px !important;
+  }
+  
+  .skybug-program-card .button {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+  }
+  
+  .skybug-metrics-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .api-method-select, .api-endpoint-input {
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .skybug-program-card {
+    margin: 0 -8px;
+    border-radius: 8px;
+  }
+  
+  .skybug-program-card > div[style*="display:flex"] {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .skybug-metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .skybug-commits-modal > div {
+    margin: 10px !important;
+    max-width: none !important;
+  }
+}
+
+/* Touch-friendly interactions */
+@media (pointer: coarse) {
+  .skybug-program-card .button {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+  
+  .skybug-metrics-toggle, 
+  .skybug-api-tester-toggle {
+    min-height: 40px;
+    padding: 8px 12px !important;
+  }
+}
+
+/* Collapsible card animations */
+.skybug-metrics-panel,
+.skybug-api-tester-panel {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.skybug-template-menu {
+  box-shadow: 0 4px 16px rgba(0,0,0,.15) !important;
+  border: 1px solid #e1e4e8 !important;
+}
+
+.skybug-template-menu a:hover {
+  background: #f8f9fa !important;
+}
+
+#skybug-program-modern .skybug-card{box-shadow:0 1px 2px rgba(0,0,0,.04)}
+#skybug-program-modern code{font-family:ui-monospace,monospace}
+#skybug-program-modern .skybug-program-layout{max-width:1400px}
+@media (max-width:1100px){#skybug-program-modern .skybug-program-layout{grid-template-columns:1fr}}
+/* Hide classic editor for program */
+.post-type-skybug_program #postdivrich,.post-type-skybug_program #post-status-info{display:none!important}

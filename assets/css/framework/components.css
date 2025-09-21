@@ -1,0 +1,1056 @@
+/* ====================================
+   SkyBug Modern Framework - Components
+   ====================================== */
+
+/* == CARDS == */
+.skybug-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.skybug-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.skybug-card-header {
+  padding: var(--spacing-6);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.skybug-card-body {
+  padding: var(--spacing-6);
+}
+
+.skybug-card-footer {
+  padding: var(--spacing-4) var(--spacing-6);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+}
+
+/* Card variations */
+.skybug-card-primary {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--primary-subtle);
+}
+
+.skybug-card-success {
+  border-color: var(--success);
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--success-subtle);
+}
+
+.skybug-card-warning {
+  border-color: var(--warning);
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--warning-subtle);
+}
+
+.skybug-card-error {
+  border-color: var(--error);
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--error-subtle);
+}
+
+/* == BUTTONS == */
+.skybug-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-4);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.skybug-btn:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.skybug-btn-primary {
+  background: var(--primary);
+  color: var(--text-inverse);
+  border-color: var(--primary);
+}
+
+.skybug-btn-primary:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: var(--text-inverse);
+  text-decoration: none;
+}
+
+.skybug-btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.skybug-btn-secondary:hover {
+  background: var(--bg-secondary);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.skybug-btn-success {
+  background: var(--success);
+  color: var(--text-inverse);
+  border-color: var(--success);
+}
+
+.skybug-btn-success:hover {
+  background: var(--success-light);
+  border-color: var(--success-light);
+  color: var(--text-inverse);
+  text-decoration: none;
+}
+
+/* Button sizes */
+.skybug-btn-sm {
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-xs);
+}
+
+.skybug-btn-lg {
+  padding: var(--spacing-4) var(--spacing-6);
+  font-size: var(--font-size-base);
+}
+
+/* == BADGES == */
+.skybug-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.skybug-badge-primary {
+  background: var(--primary-subtle);
+  color: var(--primary-dark);
+}
+
+.skybug-badge-success {
+  background: var(--success-subtle);
+  color: var(--success);
+}
+
+.skybug-badge-warning {
+  background: var(--warning-subtle);
+  color: var(--warning);
+}
+
+.skybug-badge-error {
+  background: var(--error-subtle);
+  color: var(--error);
+}
+
+.skybug-badge-info {
+  background: var(--info-subtle);
+  color: var(--info);
+}
+
+/* Animated badge (pulsing) */
+.skybug-badge-pulse {
+  animation: skybug-pulse 2s infinite;
+}
+
+@keyframes skybug-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* == METRIC CARDS (Dashboard specific) == */
+.skybug-metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-6);
+  text-align: center;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.skybug-metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+}
+
+.skybug-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.skybug-metric-value {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  line-height: var(--line-height-tight);
+  margin: var(--spacing-2) 0;
+}
+
+.skybug-metric-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.skybug-metric-change {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-3);
+}
+
+.skybug-metric-change.positive {
+  color: var(--success);
+}
+
+.skybug-metric-change.negative {
+  color: var(--error);
+}
+
+.skybug-metric-change.neutral {
+  color: var(--text-muted);
+}
+
+/* == PROGRAM CARDS == */
+.skybug-program-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  overflow: hidden;
+}
+
+.skybug-program-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-subtle);
+}
+
+.skybug-program-header {
+  padding: var(--spacing-5);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+}
+
+.skybug-program-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.skybug-program-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-2);
+}
+
+.skybug-program-body {
+  padding: var(--spacing-5);
+}
+
+.skybug-program-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-4);
+}
+
+.skybug-program-stat {
+  text-align: center;
+}
+
+.skybug-program-stat-value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  display: block;
+}
+
+.skybug-program-stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* == STATUS INDICATORS == */
+.skybug-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.skybug-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.skybug-status-active .skybug-status-dot {
+  background: var(--success);
+  animation: skybug-pulse-dot 2s infinite;
+}
+
+.skybug-status-inactive .skybug-status-dot {
+  background: var(--text-muted);
+}
+
+.skybug-status-error .skybug-status-dot {
+  background: var(--error);
+  animation: skybug-pulse-dot 1s infinite;
+}
+
+@keyframes skybug-pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* == SEARCH AND FILTER == */
+.skybug-search-container {
+  position: relative;
+  margin-bottom: var(--spacing-6);
+}
+
+.skybug-search-input {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4) var(--spacing-3) var(--spacing-10);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.skybug-search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-subtle);
+}
+
+.skybug-search-icon {
+  position: absolute;
+  left: var(--spacing-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  width: 20px;
+  height: 20px;
+}
+
+/* == TABLES == */
+.skybug-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.skybug-table th {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  text-align: left;
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.skybug-table td {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.skybug-table tr:last-child td {
+  border-bottom: none;
+}
+
+.skybug-table tr:hover {
+  background: var(--bg-secondary);
+}
+
+/* == LOADING STATES == */
+.skybug-skeleton {
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skybug-loading 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes skybug-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skybug-skeleton-text {
+  height: 1em;
+  margin: var(--spacing-2) 0;
+}
+
+.skybug-skeleton-title {
+  height: 1.5em;
+  width: 60%;
+  margin: var(--spacing-3) 0;
+}
+
+.skybug-skeleton-card {
+  height: 200px;
+}
+
+/* ============ Test Buttons ============ */
+.skybug-test-button {
+  padding: var(--spacing-2) var(--spacing-4);
+  font-size: var(--font-size-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-left: var(--spacing-2);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+}
+
+.skybug-test-button:hover {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.skybug-test-button:active {
+  transform: translateY(0);
+}
+
+.skybug-test-button:disabled {
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.skybug-test-button.loading {
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  cursor: wait;
+}
+
+.skybug-test-button.loading::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: var(--spacing-1);
+}
+
+.skybug-test-result {
+  margin-top: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  display: none;
+}
+
+.skybug-test-result.success {
+  background: var(--success-light);
+  color: var(--success-dark);
+  border: 1px solid var(--success);
+  display: block;
+}
+
+.skybug-test-result.error {
+  background: var(--danger-light);
+  color: var(--danger-dark);
+  border: 1px solid var(--danger);
+  display: block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ============ Settings Fields ============ */
+.skybug-settings-grid {
+  display: grid;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.skybug-settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.skybug-settings-label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.skybug-settings-input {
+  padding: var(--spacing-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+}
+
+.skybug-settings-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  outline: none;
+}
+
+.skybug-field-description, .skybug-settings-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* == API STATUS BOX == */
+.skybug-api-status-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+  transition: all var(--transition-normal);
+}
+
+.skybug-api-status-box:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.skybug-status-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-4) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.skybug-status-title::before {
+  content: '⚡';
+  font-size: var(--font-size-xl);
+}
+
+.skybug-status-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.skybug-status-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.skybug-status-icon {
+  font-size: var(--font-size-lg);
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.skybug-status-text {
+  flex: 1;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--text-primary);
+}
+
+.skybug-status-text strong {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.skybug-status-text small {
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  display: block;
+  margin-top: var(--spacing-1);
+}
+
+.skybug-status-text em {
+  color: var(--primary);
+  font-style: normal;
+  font-weight: var(--font-weight-medium);
+}
+
+/* == LOGS PAGE == */
+.skybug-logs-page .skybug-tabs {
+  display: flex;
+  gap: var(--spacing-1);
+  margin-bottom: var(--spacing-6);
+  border-bottom: 1px solid var(--border);
+}
+
+.skybug-logs-page .skybug-tab {
+  padding: var(--spacing-3) var(--spacing-4);
+  text-decoration: none;
+  color: var(--text-secondary);
+  border-bottom: 2px solid transparent;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.skybug-logs-page .skybug-tab:hover {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.skybug-logs-page .skybug-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.skybug-logs-page .skybug-filters {
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-4);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.skybug-logs-page .skybug-filters select {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* Program logs */
+.skybug-program-log-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-5);
+  margin-bottom: var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.skybug-program-log-card h3 {
+  margin: 0 0 var(--spacing-3) 0;
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+}
+
+.skybug-program-stats {
+  display: flex;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+  padding: var(--spacing-3);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+}
+
+.skybug-program-stats .stat {
+  font-size: var(--font-size-sm);
+}
+
+.status-active {
+  color: var(--success);
+  font-weight: var(--font-weight-semibold);
+}
+
+.status-inactive {
+  color: var(--text-muted);
+  font-weight: var(--font-weight-semibold);
+}
+
+.skybug-recent-issues h4 {
+  margin: 0 0 var(--spacing-2) 0;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+}
+
+.skybug-issue-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.skybug-issue-item:last-child {
+  border-bottom: none;
+}
+
+.issue-icon {
+  font-size: var(--font-size-lg);
+  width: 20px;
+  text-align: center;
+}
+
+.issue-title {
+  flex: 1;
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.issue-date {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+/* API logs */
+.skybug-api-log-table table {
+  margin-top: var(--spacing-4);
+}
+
+.skybug-api-log-table .status-success {
+  color: var(--success);
+  font-weight: var(--font-weight-semibold);
+}
+
+.skybug-api-log-table .status-error {
+  color: var(--error);
+  font-weight: var(--font-weight-semibold);
+}
+
+.skybug-api-log-table .status-unknown {
+  color: var(--text-muted);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Activity logs */
+.skybug-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.skybug-activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.skybug-activity-item:hover {
+  border-color: var(--primary-subtle);
+  transform: translateY(-1px);
+}
+
+.skybug-activity-item.closed {
+  background: var(--success-subtle);
+  border-color: var(--success-light);
+}
+
+.activity-icon {
+  font-size: var(--font-size-xl);
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-1);
+}
+
+.activity-title a {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.activity-title a:hover {
+  color: var(--primary);
+}
+
+.activity-status {
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-1) var(--spacing-2);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-medium);
+}
+
+.activity-meta {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.activity-program {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+/* ====================================
+   Bulk Actions & Modal Components
+   ====================================== */
+
+/* Bulk Actions Styling */
+.bulk-actions-container {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.bulk-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.bulk-actions-row select {
+    min-width: 200px;
+}
+
+.bulk-actions-row .button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bulk-select-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.bulk-select-controls .button {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.issue-checkbox {
+    margin-right: 10px;
+}
+
+.program-card .issue-checkbox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* Edit Program Modal */
+.edit-program-modal {
+    display: none;
+    position: fixed;
+    z-index: 999999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 0;
+    border: 1px solid #888;
+    border-radius: 6px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    background: #f0f0f1;
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 6px 6px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #23282d;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: #000;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+#modal-loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #23282d;
+}
+
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-group input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.form-actions {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+
+.form-actions .button,
+.form-actions .button-primary {
+    margin-left: 10px;
+}
+
+.program-stats {
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 2% auto;
+    }
+    
+    .bulk-actions-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .bulk-actions-row select {
+        min-width: auto;
+    }
+}
+
+/* Program action buttons */
+.skybug-program-action {
+    background: none !important;
+    border: none !important;
+    padding: 4px 8px !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    color: inherit !important;
+    font-size: inherit !important;
+}
+
+.skybug-program-action:hover {
+    background-color: rgba(0,0,0,0.05) !important;
+    border-radius: 4px !important;
+}
+
+.skybug-card-checkbox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}

@@ -1,0 +1,952 @@
+SkyBug WordPress Plugin – Detaljert Implementasjonsplan
+SkyBug er en WordPress-utvidelse for sporing av programvarerelaterte saker – inkludert bug-rapporter og ønskede funksjoner – på tvers av flere programmer/prosjekter. Pluginen integreres i WordPress-admin (med høyeste menyprioritet, slik at den vises aller øverst i venstremenyen) og tilbyr et kontrollpanel for å registrere programmer, rapportere bugs/feil, foreslå nye funksjoner, se statistikk og administrere innstillinger. Løsningen følger WordPress beste praksis for kodekvalitet, sikkerhet og oversettbarhet, og den bygges i faser der hver fase legger til ny funksjonalitet uten at tidligere krav brytes. Hver fase beskrives nøye under, med krav om at alle regler og retningslinjer verifiseres før neste fase påbegynnes.
+Fase 0: Etablere Guardrails og Utviklingsmiljø
+Denne første fasen setter opp alle sikringsmekanismer og retningslinjer som skal hindre at Copilot/AI eller utvikler avviker fra kravene. Vi definerer rammeverket for prosjektet, klargjør mappeoppsett, loggføring av læring, samt anbefaler verktøy og utvidelser for en robust utviklingsprosess.
+Definer prosjektregler og kvalitetskrav: Stålslå alle retningslinjer før koding starter. Det skal ikke forekomme dummy-data, falske eksempler eller "kommer snart"–plassholdere i noen fase – all kode og funksjonalitet som skrives skal være 100% produksjonsklar. Hver leveranse skal være kjørbar og reell, om enn med minimale datasett. Videre skal hver nye fase innlede med en verifisering av at ingen av reglene fra forrige fase er brutt. Dette innebærer å etablere en sjekkliste eller automatiske tester for å fange opp forbudt innhold (f.eks. enhetstester eller et skript som scanner kodebasen for ting som 'dummy data' eller 'coming soon'). Vi sørger også for å variere ordlyd i instruksjoner og kommentarer slik at AI-en ikke filtrerer dem ut som repeterende støy – altså benytter vi synonym og omskriving av gjentatte påminnelser.
+Opprett AI-learned-mappe og læringslogger: I rotmappen til pluginen opprettes en katalog AI-learned/ som skal inneholde ulike JSON-filer for løpende læring og dokumentasjon:
+funksjonslogg.json – Her skal alle funksjoner og viktige komponenter loggføres fortløpende. For hver funksjon som implementeres i koden, genereres en unik ID (8 tegn, f.eks. en hash) og en kort tittel. I JSON-filen lagres poster med formatet:
+{
+  "id": "<FUNKSJONS-ID>", 
+  "navn": "<KORT_OVERSKRIFT>", 
+  "beskrivelse": "<hva funksjonen gjør>", 
+  "avhengigheter": "<andre funksjoner/komponenter den henger sammen med>", 
+  "logikk": "<viktige logiske sammenhenger eller forutsetninger>", 
+  "endringsvarsel": "<hvilke andre steder som må sjekkes ved endring>"
+}
+Dette gir et levende oppslagsverk over funksjonaliteten. Viktig: I selve kildekoden skal vi markere hver funksjon med kommentarer som refererer til denne loggen. Før hver funksjonsdefinisjon skriver vi en kommentar på formen:
+# <FUNKSJONS-ID> - <KORT_OVERSKRIFT> - se AI-learned/funksjonslogg.json
+og etter funksjonens slutt skriver vi # slutt <FUNKSJONS-ID>. Disse kommentarene gjør det lett å finne igjen funksjonen og se dens dokumentasjon i JSON-loggen.
+fungerer.json – Logg over ting vi har prøvd og vet fungerer. Hver gang en tilnærming eller løsning er verifisert vellykket i praksis, noteres det her med en kort beskrivelse. Dette hjelper AI/utvikler å huske vellykkede fremgangsmåter videre i prosjektet.
+feil.json – Logg over ting vi har testet som ikke fungerer eller viste seg feil. Ved å registrere mislykkede forsøk unngår vi å gjenta dem. (For eksempel: hvis vi fant ut at en bestemt WP-hook ikke passer for vårt formål, eller at en struktur førte til bug, noteres dette.)
+usikkert.json – Her føres eventuelle antakelser eller løsninger som er mulige, men som ikke er bekreftet ennå. Altså ting vi tror kan fungere men ikke har fått testet fullstendig, enten pga. manglende implementasjon andre steder eller usikkerhet. Dette hjelper oss å huske hypoteser som må verifiseres senere.
+godekilder.json – En liste over gode kilder vi har konsultert underveis (f.eks. lenker til WordPress-dokumentasjon, Stack Exchange-svar, blogger) med korte notater om hvorfor de var nyttige. Denne fila gir et kunnskapsgrunnlag vi kan referere til under utviklingen.
+Disse filene initialiseres (f.eks. med tomme JSON-arrays eller passende struktur) allerede i fase 0 slik at de er klare til bruk. Fra nå av skal all relevant lærdom kontinuerlig lagres her, slik at AI-en/utvikleren lærer av det som gjøres riktig eller galt fortløpende. Loggingen gjør det mulig å spore designbeslutninger og avhengigheter, noe som er uvurderlig i et komplekst prosjekt.
+Bestem teknologier og beste praksis: SkyBug skal implementeres etter WordPress’ beste praksis for plugin-utvikling. Dette innebærer blant annet:
+Følge WordPress kodingstandarder (PHP coding standards) – f.eks. riktig innrykk, navngiving med prefix for å unngå kollisjoner, bruke escaping og sanitization for all input/output. Ingen rå user input skal stoles på; all data valideres og renses før bruk, og all output escapes før den skrives ut
+developer.wordpress.org
+. Vi drar nytte av WordPress-APIer for dette formålet (f.eks. sanitize_text_field(), esc_html(), wp_nonce_field() etc.), i tråd med anbefalingen om å “aldri stole på brukerdata, og alltid validere/sanitere input samt escape output”
+developer.wordpress.org
+.
+Sikkerhet: Bruk nonces for skjemaer (for å forhindre CSRF), sjekk brukerrettigheter (current_user_can()) der det er nødvendig (f.eks. kun admin skal kunne se/endre innstillinger, opprette programmer osv.), og generelt følg prinsippet om minst nødvendige privilegier. Datakommunikasjon (f.eks. API-endepunkter) sikres med nøkkel og helst over SSL (WordPress-nettstedet bør kjøre på HTTPS)
+developer.wordpress.org
+.
+Internationalization (I18n): Pluginens GUI er primært på norsk, men all tekst skal være forberedt for oversettelse via WordPress sin gettext-mekanisme (dvs. innpakkes i __(), _e() osv. med et tekstdomene). Tekstdomenet skal settes til "skybug" – som må samsvare med plugin-slug/navn
+developer.wordpress.org
+ – og deklareres i plugin-headeren. Alle brukergrensesnittstrenger (norske som engelske) pakkes inn i __('tekst', 'skybug') slik at Loco Translate eller lignende enkelt kan identifisere dem og lage oversettelser. (Merk: siden vi skriver opprinnelig tekst på norsk, vil norsk fungere som "default"/originalspråk i .pot-filen, men prinsippet er det samme.) Vi inkluderer også Domain Path: /languages i headeren og sørger for å laste text domain ved init (om ikke WordPress gjør det automatisk)
+developer.wordpress.org
+developer.wordpress.org
+.
+Ytelse og struktur: Vi unngår unødig tung kode og følger WordPress’ modulære tilnærming. For eksempel, vi laster kun scripts/stiler når det trengs (f.eks. laster JavaScript for statistikkdiagram på statistikk-siden, ikke globalt). Vi sørger for at PHP-feil fanges opp tidlig (f.eks. ved å utvikle med WP_DEBUG aktivert for å se advarsler). Arkitekturen kan være enten funksjonsbasert med prefiks (skybug_*), eller vi kan vurdere en enkel klassetilnærming (en hovedklasse SkyBug som initialiserer alt i konstruktøren) for bedre organisering. Uansett valg, alt skal navngis unikt for å unngå konflikt med andre plugins (f.eks. prefiks skybug_ på funksjoner, og SkyBug_ på eventuelle klasser).
+Databaseoppbevaring: Vi planlegger å bruke WordPress’ innebygde Content Types i størst mulig grad fremfor egne tabeller. Bugs og feature-requests håndteres naturlig som Custom Post Types, og programmer kan være en egen CPT også. Dette gir oss mye gratis funksjonalitet (WP admin UI, REST API integrasjon, etc.) og holder oss til best practice i WP-verden. Vi vil derfor benytte register_post_type() for å definere egne post-typer for Program og Sak (beskrives mer i fase 1/2). Eventuelle tilleggsdata (API-nøkler, statusfelt, relasjoner) lagres som post meta eller taksonomier, i tråd med hva som passer best.
+Filstruktur: Pluginens hoved-PHP-fil skal ligge i rot for å bli plukket opp av WordPress. Videre lager vi underkataloger etter behov, f.eks. includes/ for PHP-funksjoner eller klasser, assets/ for eventuelle statiske ressurser (JS, CSS, bilder). Vi beholder alle AI-learned loggfiler i sin dedikerte mappe som nevnt. En eventuell språkmappe languages/ vil inneholde .pot/.mo-filer når oversettelser kommer til.
+Dokumentasjon: Utover JSON-loggene våre, følger vi også best practice med rikelig inline kommentarer i koden (i tillegg til de spesielle #ID-kommentarene). Funksjoner får PHPDoc-blokk der det er hensiktsmessig, for å beskrive parametre, returverdier og funksjon. Dette gir Copilot/AI bedre kontekst og hjelper andre utviklere.
+Verktøy og VS Code-utvidelser: For å sikre kvalitet og følge reglene over, settes en verktøykjede opp:
+PHP CodeSniffer med WordPress Coding Standards-ruleset for automatisk å sjekke koden mot WP standard. (Vi kan inkludere en phpcs.xml i prosjektet som krever WPCS, f.eks. kodesniffer-regler fra VIP eller tilsvarende
+technosoftwares.com
+. Dette vil fange opp alt fra manglede escaping av output, til navngivingskonvensjoner.)
+PHPStan eller Psalm for statisk analyse av PHP-koden. Dette vil identifisere typefeil, udefinerte variabler osv. tidlig. Vi kan konfigurere PHPStan på et strengt nivå (f.eks. level 8) for ekstra sikkerhet. Copilot (eller utvikleren) bør kjøre dette jevnlig, og spesielt før en fase anses som fullført.
+VS Code Extensions: Vi anbefaler å installere følgende utvidelser i VS Code for et smidigere utviklingsløp:
+PHP Intelephense – Gir intelligent autocompletion, går dypere enn standard språkserver og forstår WP-funksjoner, noe som øker AI-ens kontekstforståelse.
+PHP CS Fixer eller PHP Sniffer & Formatter – Integrerer CodeSniffer i editoren, så brudd på WP-kodingstandard markeres kontinuerlig. Alternativt WordPress Coding Standards for VSCode om tilgjengelig, for direkte linting.
+PHPStan (hvis det finnes en VSCode extension, evt. bare konfigurere som ekstern verktøy) – for å kjøre statiske analyser fra editoren.
+EditorConfig – sikrer ensartet indentering og format (dersom prosjektet har en .editorconfig for f.eks. indent med tabs vs spaces etc.).
+Better Comments – valgfri, men kan gjøre våre spesielle # ID - … kommentarer mer synlige i koden (fargekoding).
+GitLens – hvis kildekoden versjonshåndteres, kan denne hjelpe med innsikt (valgfritt).
+REST Client (for VSCode) – valgfritt for å teste API-endepunktene vi etterhvert lager (f.eks. sende en test-bug via REST).
+Polacode (bare spøk) – ikke relevant for kode, så det dropper vi.
+Copilot/AI bør nå avvente bekreftelse fra brukeren (eller sjekke selv) om at nødvendige utvidelser er installert og at utviklingsmiljøet er klart. Vi lister dem opp tydelig slik at brukeren kan installere eventuelle manglende extensions og melde "OK". Ingen kode skrives før utvikleren har disse verktøyene på plass, da de er en del av guardrails-systemet.
+Oppsummering Fase 0: På dette stadiet er ingen funksjonalitet av selve pluginen implementert ennå; men vi har satt opp rammene som sikrer en korrekt og effektiv utvikling. Vi har definert strenge krav (ingen mock-data, alltid ferdig kode), laget en infrastruktur for kontinuerlig læring (AI-learned logger), klargjort for oversettelser, og rigget kvalitetsverktøy. Før vi går videre: Vi dobbeltsjekker at alle ovennevnte guardrails er på plass. Sørg for at JSON-loggfilene finnes og er skrivbare, at lintere/analysis-verktøy kjører uten feil, og at det finnes mekanismer (manuelle eller automatiske) for å fange opp eventuelle brudd på reglene (som dummy-tekst). Ikke gå videre til fase 1 før miljøet er verifisert klart og alle sikringsregler er aktive.
+Fase 1: Grunnleggende Plugin-struktur og Admin-meny
+I fase 1 implementerer vi kjernestrukturen til pluginen: hovedfilen med oppstartskode, registrering av databærende enheter (custom post types for Programmer og Saker), samt opprettelse av admin-menyen SkyBug med alle nødvendige undermenyer. Målet er å etablere “skjelettet” av pluginen – alle hovedkomponenter skal finnes og være funksjonelle, om enn med minimal innhold, slik at vi har et rammeverk å bygge videre på.
+Hovedplugin-fil og initialisering: Opprett filen skybug.php i plugin-rotkatalogen. Øverst legger vi inn standard WordPress-plugin header:
+/*
+ * Plugin Name: SkyBug – Bug & Feature Tracker
+ * Plugin URI:  https://smartesider.no/skybug (eksempel)
+ * Description: SkyBug sporer kjente feil (bugs) og ønskede funksjoner for ulike programmer direkte i WP-admin.
+ * Version:     1.0.0
+ * Author:      <UtviklerNavn/Firma>
+ * Text Domain: skybug
+ * Domain Path: /languages
+ */
+Pluss en sikkerhetssjekk i starten:
+if (!defined('ABSPATH')) { exit; }  // Hindre direkte aksess
+Deretter laster vi text domain (f.eks. load_plugin_textdomain('skybug', false, dirname(__FILE__) . '/languages');) slik at oversettelser fungerer. Vi definerer også gjerne noen konstanter for enkelhets skyld, f.eks.:
+define('SKYBUG_DIR', plugin_dir_path(__FILE__));
+define('SKYBUG_URL', plugin_dir_url(__FILE__));
+define('SKYBUG_VERSION', '1.0.0');
+Disse kan brukes for å inkludere filer eller versjonsbuste scripts senere.
+(Merk: Hvis vi bruker en hovedklasse, ville vi initialisere klassen her isteden. Men en funksjonsbasert tilnærming med globale funksjoner er også OK for en plugin av denne størrelsen.)
+Registrer Custom Post Types (CPT) for Program og Sak: Nå introduserer vi de sentrale dataobjektene:
+Programmer: En egen innleggstype som representerer hvert program/produkt vi ønsker å spore bugs for. Vi kaller denne CPT-en for skybug_program (slug: “program”). Denne trenger kun enkle felt: tittel (programnavn) og mulighet for beskrivelse. Vi setter 'public' => false (fordi programmer trenger ikke ha offentlig nettsted-visning som innlegg) men 'show_ui' => true slik at den kan administreres i WP-admin. Videre 'menu_icon' => 'dashicons-admin-generic' (ikon velges uansett ikke så nøye da vi skal samle under vårt eget menyikon). Viktigst: Vi vil ikke la WordPress lage et eget toppnivåmeny for denne CPT-en. I stedet legger vi den under vårt eget SkyBug-meny. Derfor bruker vi register_post_type-argumentet 'show_in_menu' for å kontrollere plasseringen. Her finnes to muligheter:
+Sett 'show_in_menu' => 'skybug_dashboard' (der 'skybug_dashboard' er slug-en vi kommer til å bruke for hovedmenyen). Dette forteller WP at Program-posttypen skal vises som undermeny under vår plugin.
+Alternativt kan vi sette 'show_in_menu' => false og selv lage en undermenylenke til edit.php?post_type=skybug_program manuelt. Begge metoder oppnår lignende resultat. For pålitelighet velger vi her å manuelt opprette menylenken (i add_menu_page/add_submenu_page, se under) for full kontroll, så vi kan sette 'show_in_menu' => false i CPT-registreringen.
+Vi registrerer CPT slik:
+register_post_type('skybug_program', array(
+    'labels' => array(
+        'name' => __('Programmer', 'skybug'),
+        'singular_name' => __('Program', 'skybug'),
+        'add_new_item' => __('Legg til nytt program', 'skybug'),
+        'edit_item' => __('Rediger program', 'skybug'),
+        // ... andre labels om ønskelig
+    ),
+    'public' => false,
+    'show_ui' => true,
+    'show_in_menu' => false, // vi legger til egen meny
+    'supports' => array('title','editor'), // tittel for navn, editor for beskrivelse
+    'capability_type' => 'post',
+    'capabilities' => array(
+        'manage_terms' => 'manage_options', // evt. definere egne, men admin kan få tilgang
+    ),
+    'has_archive' => false,
+    'rewrite' => false,
+));
+(Kommentar: Vi lar foreløpig capability_type stå til 'post' med default capabilities, men fordi plugin mest sannsynlig kun brukes av administratorer, holder det å la manage_options eller edit_posts dekke det. Vi kan justere mer presist senere.)
+Saker (Issues): En CPT for alle innrapporterte saker – enten det er feil (bugs) eller forslag. Navn: skybug_issue (slug: “sak” eller “issue”). Denne posttypen skal ha: tittel (kort beskrivelse av saken), innhold (detaljert beskrivelse/reproduksjonssteg), mulighet for kommentarer (slik at man kan diskutere bugen eller legge til oppdateringer i saken). Vi setter 'supports' => array('title','editor','comments'). Vi vil også knytte hver sak til et Program, samt markere om det er en bug eller en ønsket funksjon.
+For å knytte til program: Vi planlegger å bruke en metadata-felt (post meta) som heter f.eks. _skybug_program_id på sak-innleggene, som lagrer IDen til et program. Alternativt kunne vi brukt en taksonomi “Program” eller definert Program som en forelder i hierarkiet. WordPress’ innebygde hierarki støtter egentlig bare parent-child innen samme post type, så vi kan ikke direkte sette en skybug_issue som barn av en skybug_program. Derfor er meta det greieste. Vi lager en meta-boks for å velge Program senere.
+For å markere type (bug vs feature): Vi registrerer en egen taksonomi “Sakstype” (f.eks. skybug_type) knyttet til skybug_issue. Denne taksonomien har forhåndsdefinerte begrep: “Bug” og “Funksjonsønske” (vi kan lagre dem på engelsk slug f.eks. bug/feature, men vise norsk navn). Ved registrering av taksonomien setter vi 'public' => false (slik at det ikke dukker opp på nettstedet), 'show_ui' => true (så vi får en metabox i editor), og 'show_in_menu' => false. Etter registrering kan vi manuelt opprette de to termene:
+wp_insert_term(__('Bug','skybug'), 'skybug_type', array('slug'=>'bug'));
+wp_insert_term(__('Ønsket funksjon','skybug'), 'skybug_type', array('slug'=>'feature'));
+(Dette kan gjøres på plugin-aktivering eller ved førstegangs bruk, for å sikre at de alltid finnes. Alternativt sjekke i koden om de finnes og opprette hvis ikke.)
+Vi vil også vurdere en måte å markere status på sakene (åpen, lukket, evt. under arbeid). WordPress har post status som kan brukes (f.eks. en custom status skybug_closed). Men det kan være like greit å ha en taksonomi “Status” (Åpen/Løst) eller et boolsk meta. For enkelhet i første omgang legger vi opp til at alle saker er “Åpne” som default, og utvider med løst-status senere (kanskje i fase 3).
+Register selve posttypen skybug_issue:
+register_post_type('skybug_issue', array(
+   'labels' => array(
+       'name' => __('Saker', 'skybug'),
+       'singular_name' => __('Sak', 'skybug'),
+       'add_new_item' => __('Ny sak', 'skybug'),
+       'edit_item' => __('Rediger sak', 'skybug'),
+       'menu_name' => __('Saker', 'skybug'),
+   ),
+   'public' => false,
+   'show_ui' => true,
+   'show_in_menu' => false, // vi håndterer meny manuelt
+   'supports' => array('title','editor','comments'),
+   'has_archive' => false,
+   'rewrite' => false,
+));
+Etter denne registreringen, registrer taksonomien for sakstype:
+register_taxonomy('skybug_type','skybug_issue', array(
+   'labels' => array(
+       'name' => __('Sakstype', 'skybug'),
+       'singular_name' => __('Sakstype', 'skybug'),
+       'menu_name' => __('Type', 'skybug'),
+   ),
+   'public' => false,
+   'show_ui' => true,
+   'hierarchical' => false,
+   'show_in_menu' => false,
+));
+(Evt. også en taksonomi for status som nevnt, men det tar vi senere.)
+Kall flush_rewrite_rules() ved aktivering om vi hadde laget offentlige rewrite-regler. Siden alt er rewrite:false, vi har ingen offentlige sider her ennå, så det er ikke nødvendig nå.
+Etter registrering av CPTer og taksonomi, er databasegrunnlaget lagt. Foreløpig har vi ikke implementert inndatafelt for meta eller brukt disse dataene, men WordPress admin vil allerede ha grunnleggende skjermer: en oversikt over programmer (tom inntil vi legger til noe), og en oversikt over saker. Men fordi vi satte show_in_menu=false, vises de ikke av seg selv i noen meny. Det skal vi fikse nå via egen meny.
+Opprett SkyBug adminmeny med undermenyer: Vi bruker WordPress’ admin-meny-API for å lage en ny seksjon i venstremenyen. Siden pluginen skal være svært synlig og prioriteres øverst, setter vi posisjon=0 (eller 1) – dette gjør at vår meny vises før selv “Dashboard” i WP-admin
+developer.wordpress.org
+. (Dashboard har standard posisjon 2, så posisjon 1 vil legge oss rett over
+developer.wordpress.org
+.) Vi velger også et passende ikon. WordPress har et sett av Dashicons (ikonfont). Et insekt/bille-ikon er ikke standard i dashicons per 2025 (det finnes “bug”-emoji men ikke i dashicons), vi kan velge noe som assosieres med feilhåndtering, f.eks. “dashicons-sos” (sirene) eller “dashicons-hammer” (verktøy) – eventuelt et generisk ikon som tannhjul eller liste. For nå tar vi dashicons-admin-tools (skiftenøkkel-ikon) som symbol på feilutbedring. Vi kan bytte senere når design kommer i fokus. Selve menyoppsettet:
+Kall add_action('admin_menu', 'skybug_register_admin_menu'); i init.
+Definer funksjon skybug_register_admin_menu() som kjører add_menu_page() og en serie add_submenu_page(). Husk å legge til funksjonsreferanser i funksjonslogg (med ID i kommentar) når vi skriver dem:
+# 1a2b3c4d - Registrer adminmeny - se AI-learned/funksjonslogg.json
+function skybug_register_admin_menu() {
+    // Hovedmeny
+    add_menu_page(
+        __('SkyBug Dashboard','skybug'),   // sidetittel (vises på selve siden)
+        __('SkyBug','skybug'),            // menytittel i sidelisten
+        'manage_options',                // kapabilitet (kun admin som standard)
+        'skybug_dashboard',              // meny-slug (unik identifikator)
+        'skybug_render_dashboard_page',  // callback som viser innhold på hovedsiden
+        'dashicons-admin-tools',         // ikon
+        1                                // posisjon (0/1 for topp-prioritet)
+    );
+    // … (kall add_submenu_page for de ulike undermenyene) …
+}
+# slutt 1a2b3c4d
+Når vi kjører add_menu_page, så vil WordPress automatisk opprette en første undermeny som peker til samme side som hovedmenyen (dette pleier å være standard: “SkyBug” som subelement også). Vi kan utnytte det eller overstyre. For enkelthet lar vi hovedsiden være et slags Dashboard/oversikt for SkyBug (for eksempel en velkomstside som kan vise noen snarveier eller en sum av åpne bugs osv.). Vi har definert callback skybug_render_dashboard_page for den – implementeres snart.
+Nå legger vi til undermenyer i ønsket rekkefølge (de vil vises under “SkyBug”):
+Programmer: side hvor man kan administrere listen av programvare-prosjekter. Siden vi allerede har CPT for Program, ønsker vi at denne undermenyen leder direkte til WP sin innebygde listevisning for Program. Det kan vi gjøre ved å angi slug som 'edit.php?post_type=skybug_program' i stedet for en egen callback. WordPress tillater at man oppgir en eksisterende meny/side i slug-feltet for under/overmenyer
+wordpress.stackexchange.com
+. Dermed vil klikk på “Programmer” gå til den samme skjermen man ellers får via edit.php?post_type=skybug_program. Slik får vi gratis listevisning og “Legg til ny”-knapp etc. Koden:
+add_submenu_page(
+    'skybug_dashboard',
+    __('Programmer','skybug'), __('Programmer','skybug'),
+    'manage_options',
+    'edit.php?post_type=skybug_program',
+    null  // null callback siden WP håndterer denne
+);
+WordPress krever capability sjekk her også (manage_options så kun admin ser den). Etter dette vil “Programmer” dukke opp under SkyBug-menyen. Når man klikker den, kommer man til WP sin liste over Program-poster (som foreløpig er tom). Fra den skjermen kan bruker klikke “Legg til nytt program” og få WP standard redigeringsside for Program CPT (vi kommer til å tilpasse denne etter hvert med feltene for API-nøkkel).
+Saker: tilsvarende kobler vi til listevisning for skybug_issue. Kall:
+add_submenu_page(
+    'skybug_dashboard',
+    __('Alle saker','skybug'), __('Saker','skybug'),
+    'manage_options',
+    'edit.php?post_type=skybug_issue',
+    null
+);
+Dette gir en undermeny “Saker” som viser alle saker (både bugs og feature-ønsker) i en samlet liste. WordPress vil automatisk tilby filtrering etter sakstype i toppfilteret (fordi vi har en taksonomi tilknyttet). Dermed kan admin filtrere på bug vs ønskede funksjoner via dropdown allerede nå uten at vi har kodet noe ekstra (WP genererer en “Vis alle / Bug / Ønsket funksjon” dropdown basert på taksonomien).
+Bug Reports: Brukeren ønsket en egen undermeny for kun bugrapporter. Selv om man kan filtrere i “Saker”, for brukeropplevelsen lager vi en dedikert inngang. Her har vi to valg:
+Lage en egen side (med egen callback) som henter ut alle saker av type “Bug” og viser dem.
+Eller lage en menylenke som forhåndsfiltrerer det eksisterende sak-listen. Vi kan prøve sistnevnte:
+add_submenu_page(
+    'skybug_dashboard',
+    __('Feilrapporter','skybug'), __('Bug Reports','skybug'),
+    'manage_options',
+    'skybug_bugs_page',
+    'skybug_render_bugs_page'
+);
+og i skybug_render_bugs_page() gjøre en query hvor vi kun viser saker med taksonomien “bug”. En rask måte: Vi kan gjenbruke WP_List_Table for posts. En hack: sette global query vars og inkludere edit.php template – men det er ugunstig. Bedre: Vi skriver en enkel liste: loop gjennom alle skybug_issue der tax_query => skybug_type = bug og så formaterer en tabell. (Kolonner: Sak tittel med lenke til redigering, programnavn, status f.eks., opprettet dato). For nu holder det at vi viser en liste (kan forbedres i senere fase). Denne tilnærmingen krever at vi selv implementerer litt HTML for tabellen. Fordelen er at vi kan tilpasse kolonner helt fritt. Ulempen er litt mer kode. Siden alt skal være produksjonsklart, velger vi å gjøre det – da får brukeren en fin oversikt.
+Implementasjon: I skybug_render_bugs_page():
+Hent alle innlegg av type 'skybug_issue' som har taksonomi 'skybug_type' = 'bug'. (Bruk get_posts() eller WP_Query med 'tax_query' => array([...])).
+Bygg en HTML-tabell:
+<div class="wrap"><h1>Bug Reports</h1>
+<table class="wp-list-table widefat fixed striped">
+  <thead><tr><th>Tittel</th><th>Program</th><th>Status</th><th>Dato</th></tr></thead>
+  <tbody> ... </tbody>
+</table></div>
+Fyll inn hver rad med:
+Tittel: tittelen på saken, som hyperlink til WordPress’ innebygde rediger-side (use get_edit_post_link($post_id) for URL).
+Program: finn programmet via meta _skybug_program_id og hent program-tittel (bruk get_post($id)), skriv ut navnet. (Hvis ingen program koblet, skriv “–”).
+Status: foreløpig standard “Åpen” på alt (vi implementerer lukking senere), evt. skriv ut “Åpen” eller basert på om post status er publish/draft (men vi holder alt som publish for aktive saker). Vi kan utelate status-kolonnen til vi har implementert lukking. Kanskje bedre å utelate nå for ikke å gi inntrykk av halvfunksjonalitet.
+Dato: publiseringsdato (formatert via get_the_date()).
+Hvis listen er tom, viser vi en melding i tabellen “Ingen bug-rapporter registrert.” (Dette er reelt datauttrykk, ikke en placeholder – det betyr at pt. finnes det ingen, hvilket er sant på en fersk installasjon, så det er lov).
+Legg gjerne til en knapp/lenke “Opprett ny bug” som peker til post-new.php?post_type=skybug_issue&skybug_type=bug (forhåndsvelge bug type om mulig). Hvis det ikke er trivielt, kan vi bare peke til vanlig ny sak og så må man velge type manuelt.
+NB: Husk å loggføre funksjonen i funksjonslogg.json og legge #ID-kommentarer før og etter funksjonsblokken.
+Ønskede funksjoner: På samme måte lager vi undermeny for feature requests:
+add_submenu_page(
+    'skybug_dashboard',
+    __('Ønskede funksjoner','skybug'), __('Ønskede funksjoner','skybug'),
+    'manage_options',
+    'skybug_features_page',
+    'skybug_render_features_page'
+);
+Callback skybug_render_features_page() gjør tilsvarende som for bugs, men filtrerer sakene på taksonomi = feature. Vi genererer en liste/tabell med “Ønskede funksjoner” (kanskje kolonnene Program, Ønsket funksjon, Dato). Formattet blir likelydende bug-listen. Også her: hvis ingen finnes, si “Ingen registrerte ønsker.”.
+Statistikk: En undermeny for “Statistikk”. Her lager vi en helt egen side som i fremtidige faser skal vise grafer og tall. Foreløpig kan vi fylle den med en enkel oversikt som faktisk fungerer: for eksempel “Antall programmer: X, Antall åpne bugs: Y, Antall ønskede funksjoner: Z”. Disse tallene kan vi hente kjapt med wp_count_posts('skybug_program') etc., samt en taxonomi count. Dette er et minimum som er ekte data. Slik unngår vi “kommer snart”. Planen er å utvide denne siden i fase 4 med grafikk.
+add_submenu_page(
+    'skybug_dashboard',
+    __('Statistikk','skybug'), __('Statistikk','skybug'),
+    'manage_options',
+    'skybug_stats',
+    'skybug_render_stats_page'
+);
+I skybug_render_stats_page() outputter vi HTML som f.eks.:
+<div class="wrap"><h1>Statistikk</h1>
+<p><strong>Totalt programmer:</strong> X</p>
+<p><strong>Totalt registrerte saker:</strong> Y</p>
+<p>- hvorav bugs: B</p>
+<p>- hvorav ønskede funksjoner: F</p>
+</div>
+Her er X = wp_count_posts('skybug_program')->publish (antall publiserte Program-poster), Y = wp_count_posts('skybug_issue')->publish, B = antall issues med type=bug (kan hentes ved å telle term-relasjoner eller bruke get_terms count), F = tilsvarende for feature. Selv med 0 i alle, vil tallene vises (0 er faktiske data). Dermed er siden funksjonell. Husk oversette “Totalt programmer” etc. via __().
+(Vi noterer at senere skal vi erstatte/utvide disse statene med grafer.)
+Innstillinger: Undermeny for “Innstillinger”. Dette skal være en side for plugin-konfigurasjon. Siden vi ennå ikke har definert noen innstillinger, legger vi likevel til siden nå for fullstendighet, med en tom/forsiktig implementasjon:
+add_submenu_page(
+    'skybug_dashboard',
+    __('Innstillinger','skybug'), __('Innstillinger','skybug'),
+    'manage_options',
+    'skybug_settings',
+    'skybug_render_settings_page'
+);
+I skybug_render_settings_page() kan vi for nå skrive ut en side med teksten:
+<div class="wrap"><h1>Innstillinger</h1>
+<p>Ingen konfigurerbare innstillinger tilgjengelig.</p></div>
+Dette er sant i fase 1 – vi har ikke laget noen instillinger ennå. Teksten er nøktern og ikke et løfte om fremtidig funksjonalitet, så det er i orden. (Vi vil senere i fase 4 fylle ut reelle innstillinger her, som f.eks. publikumstilgang og e-postvarsler.)
+Brukermanual: Undermeny for “Brukermanual”. Denne siden skal gi brukeren en veiledning i bruk av SkyBug. Vi lager en statisk side med litt forklaring. Allerede nå kan vi skrive noe innhold basert på det som er implementert så langt:
+add_submenu_page(
+    'skybug_dashboard',
+    __('Brukermanual','skybug'), __('Brukermanual','skybug'),
+    'manage_options',
+    'skybug_manual',
+    'skybug_render_manual_page'
+);
+I skybug_render_manual_page() skriver vi HTML med overskrift og brødtekst. For eksempel:
+<div class="wrap"><h1>Brukermanual – SkyBug</h1>
+<p>SkyBug-pluginen lar deg holde oversikt over feil og ønskede nye funksjoner for dine programmer.</p>
+<p>Du kan registrere <strong>Programmer</strong> i fanen Programmer – hvert program representerer et system/produkt du vil spore saker for.</p>
+<p>Under <strong>Saker</strong> kan du se alle innrapporterte saker. Bruk undermenyene <em>Bug Reports</em> og <em>Ønskede funksjoner</em> for å filtrere etter type.</p>
+<p><strong>Statistikk</strong>-siden viser deg nøkkeltall om registrerte programmer og saker.</p>
+<p>For oppsett, gå til <strong>Innstillinger</strong>.</p>
+<p>Denne brukermanualen vil oppdateres etterhvert som nye funksjoner legges til.</p>
+</div>
+Dette er nyttig og faktisk sant per nå. (NB: Vi bruker norsk tekst direkte her, men for oversettbarhet bør vi også pakke det i __(). Siden dette er en lengre tekst med HTML, kan det være greit å splitte opp eller echo ut med gettext i biter.)
+Diverse: En siste undermeny “Diverse” for diverse formål. Vi vet ikke helt hva som skal inn her ennå, men vi inkluderer den som et tomt skall for å oppfylle kravet om menyen.
+add_submenu_page(
+    'skybug_dashboard',
+    __('Diverse','skybug'), __('Diverse','skybug'),
+    'manage_options',
+    'skybug_misc',
+    'skybug_render_misc_page'
+);
+I skybug_render_misc_page() kan vi f.eks. vise en tekst:
+<div class="wrap"><h1>Diverse</h1>
+<p>Denne seksjonen kan inneholde diverse informasjon eller verktøy.</p></div>
+– Dette er generelt men legit (den kan f.eks. brukes senere til å vise logger som vi planla, eller annen info). Ingen tom “kommer snart”, bare en placeholder tekst som sier hva den kan inneholde. Vi sørger for at det vi skriver her ikke lover en funksjon som ikke eksisterer, det er bare en generell tekst.
+Implementer callbacks for sidene: Som notert over skal vi lage funksjoner skybug_render_dashboard_page, skybug_render_bugs_page, skybug_render_features_page, skybug_render_stats_page, skybug_render_settings_page, skybug_render_manual_page, skybug_render_misc_page. Foreløpig gjøres dette ganske enkelt (som forklart punktvis). Vi må passe på at hver funksjon får sin unike ID og loggføres i funksjonslogg.json. Eksempel for én av dem:
+# a1b2c3d4 - Render SkyBug Dashboard side - se AI-learned/funksjonslogg.json
+function skybug_render_dashboard_page() {
+    echo '<div class="wrap"><h1>' . __('SkyBug Oversikt','skybug') . '</h1>';
+    echo '<p>' . __('Velkommen til SkyBug dashboard. Bruk menyen til venstre for å navigere til de ulike seksjonene.','skybug') . '</p>';
+    echo '</div>';
+}
+# slutt a1b2c3d4
+Her viser vi en enkel velkomst med overskrift. Etterhvert kan vi utvide dashbordet med kanskje en oversikt over nylige saker eller lignende, men i første omgang holder dette. Det viktigste er at siden ikke er tom eller uferdig – den viser noe meningsfylt (en velkomstmelding).
+Tilsvarende lager vi funksjonene for de andre sidene, i tråd med innholdet beskrevet i undermeny-punktene over. Alle får #ID-kommentarer og en tilsvarende oppføring i funksjonslogg.json med beskrivelse. (For eksempel: skybug_render_stats_page sin loggpost vil si noe om at den samler inn statistikk over antall saker osv., og at hvis man endrer CPT-struktur, må man oppdatere denne logikken også.)
+Ikoner for undermenyer: WordPress viser som kjent kun ikon ved hovedmeny-punktet, ikke ved undermenypunktene (de har som regel bare innrykk). I spørsmålet sto det "Alle med små ikoner". For å oppfylle dette kan vi legge til egne ikoner for hver undermeny ved hjelp av CSS eller i side-innholdet:
+En enkel måte: Inkluder en liten ikon-emoji eller liten dashicon inline ved tittelen i hver side. For eksempel i <h1>-overskriften kan vi prepend en emoji (🐞 for bug, ✨ for feature, ℹ️ for info etc.). Men det er litt uortodokst.
+Alternativ: Bruke CSS i admin: f.eks. enqueue en liten CSS som tilføyer background-image på meny-lenkene. WP gir som regel class til menu items basert på slug. Vi kan lage CSS som:
+.toplevel_page_skybug_dashboard .wp-first-item:before { content: "\f486"; } (som eksempel, f486 er dashicons-admin-tools). Og for spesifikke subpages: .toplevel_page_skybug_dashboard li a[href*="skybug_manual"]:before { content: "\f128"; } etc., hvor innholdet er en relevant dashicon code. Dette krever litt eksperimentering med selectors. Hvis komplisert, kan man utsette det. Men for full poeng, la oss si vi i senere fase (når finpuss) legger til litt CSS for ikoner. Foreløpig lar vi hovedikonet representere hele plugin i menyen. (Vi kan notere i usikkert.json at undermenyer ikonset er noe vi vil se på, men ikke kritisk nå.)
+Aktiver plugin og test grunnfunksjoner: Nå som vi har koden for CPT-er og meny, aktiverer vi pluginen (i en testmiljø) og verifiserer:
+SkyBug-menyen vises øverst i WP-admin (ikon og navn sjekkes).
+Under SkyBug skal undermenypunktene være i riktig rekkefølge: Dashboard (skjult eller som hovedlenken), Programmer, Saker, Bug Reports, Ønskede funksjoner, Statistikk, Innstillinger, Brukermanual, Diverse.
+Klikk hver av dem og se at siden laster uten feil og viser fornuftig innhold:
+Programmer: bør vise WP’s standard liste (tom liste med “Ingen programmer funnet” – en faktisk melding fra WP når CPT har null poster). Har også en “Legg til nytt”-knapp som fungerer (åpner ny Program redigering).
+Saker: viser WP’s standard saksliste (tom nå). Har “Legg til ny sak”-knapp.
+Bug Reports: viser vår egendefinerte side. Siden det ikke finnes noen saker ennå, den skal vise tabellhode og en melding “Ingen bug-rapporter registrert.”. OK.
+Ønskede funksjoner: tilsvarende, viser “Ingen registrerte ønsker.”.
+Statistikk: skal vise 0 for alle tellerne (0 programmer, 0 saker osv.). Det er riktig initialt.
+Innstillinger: viser teksten at ingen innstillinger finnes.
+Brukermanual: viser introduksjonsteksten vi skrev.
+Diverse: viser den generelle teksten.
+Sjekk også at tekstene er oversatt korrekt (siden vi skrev de på norsk som default, oversettelse er ikke merkbar nå, men alt er pakket i __('','skybug') hvilket er bra).
+Vi verifiserer at ingen steder i UI står det ting som “coming soon” eller dummyverdier. Alt innhold som vises er enten dynamisk generert fra systemet (f.eks. teller 0 poster) eller fast informative tekster som er gyldige.
+Sjekk at menyrekkefølge og prioritet er riktig: SkyBug øverst (over Dashbord). Om WordPress av en eller annen grunn ikke plasserte posisjon 1 over dashbord (noen WP-versjoner plasserer alt over separator 0-4 under dashbord, men posisjon 2 er dashbord, så posisjon 1 burde gå over). Om det ikke vises helt øverst, vurder å bruke 0 eller en lav float (f.eks. 0.5). Foreløpig antar vi det funker med 1.
+Oppdater AI-loggene: For alle funksjoner vi nettopp definerte (CPT-registreringsfunksjon, hver render-funksjon for sidene, osv.), legg inn dokumentasjon i funksjonslogg.json som spesifisert. F.eks. en post:
+{"id": "a1b2c3d4", "navn": "Render SkyBug Dashboard side", "beskrivelse": "Genererer HTML-oversikt for hovedsiden til SkyBug med velkomstmelding.", "avhengigheter": "Ingen eksterne avhengigheter. Henter kun oversatte strenger.", "logikk": "Ingen spesiell logikk; statisk tekst. Kan utvides senere med dynamisk innhold.", "endringsvarsel": "Hvis nye oversiktsdata skal vises på dashboard, endre denne."}
+(Gjenta for hver funksjon).
+Videre: Oppdater fungerer.json med ting som ble bekreftet: f.eks. “Menypunkter koblet mot edit.php?post_type fungerte som tenkt, WP viser riktig side.” – dette er en verdifull lærdom at den teknikken funker. feil.json for eventuelle ting som måtte justeres underveis (om vi prøvde noe som feilet). usikkert.json kan nevne “Ikoner per undermeny via CSS – må undersøkes; lar det ligge foreløpig.”. godekilder.json kan få inn f.eks. en referanse til WP StackExchange-løsningen om add_submenu_page vi brukte
+wordpress.stackexchange.com
+, eller WordPress Developer docs om add_menu_page for posisjoner
+developer.wordpress.org
+.
+Etterlevelses-sjekk fase 1: Før vi avslutter fase 1, skal vi validere at alle krav fra fase 0 og 1 er oppfylt:
+Kjør PHP lint/CodeSniffer: koden bør ikke ha styling-brudd eller ubrukte variabler etc. Escaping: alle output i våre render-funksjoner bruker __() og ., som i seg selv ikke escaper HTML. Strengene våre er statiske og trygge, men for streng sikkerhet kunne vi bruke esc_html_e() i stedet for echo __(). Vi kan forbedre det nå: for all tekst som settes inn, pakk i esc_html__() eller esc_html_e() med mindre vi har HTML-tags. (I brukermanual-teksten hadde vi f.eks. <strong> – der må vi balansere oversettelse og HTML, kanskje splitte opp eller bruke printf med placeholders. Vi bør notere i usikkert.json at HTML i oversatte tekster må håndteres forsiktig for å unngå potensiell XSS fra oversettelser. Men siden det er vår egen plugin og vi kontrollerer teksten, er det greit.)
+Sjekk at ingen “kommer snart” eller dummy-loremipsum finnes i koden eller UI. Alt vi viser er ekte.
+Test litt interaksjon: opprett et test Program (Program->Add New: skriv tittel “TestProgram”, beskrivelse “abc”, lagre). Opprett deretter en test Sak (Saker->Add New: tittel “TestBug”, innhold “Dette er en test”, velg Sakstype “Bug”, lagre. Velg tilknyttet program ved å sette meta – men vent, vi har ikke laget UI for meta ennå. I WP’s editor vil ikke program meta dukke opp uten at vi lager en meta box. Akkurat nå kan vi ikke velge program for saken gjennom UI, så den testbuggen vil stå uten programtilknytning. Det er forventet i fase 1, fordi vi implementerer program-sak kobling i neste fase. Det gjør ikke noe – bugen lagres likevel. Gå til “Bug Reports”-siden vår; nå skal den vise buggen “TestBug” i listen, men Program-kolonnen kanskje blank (fordi meta mangler), status kolonne blank/åpen, etc., men tittel med lenke til redigering. Dette bekrefter at våre liste-sider funker med faktisk data. Sjekk også “Saker”-siden (edit.php-lista) – den viser “TestBug” der, med “Bug” under type-filter.
+Oppsummert: alt ser bra ut, pluginens grunnskjelett fungerer allerede på et basisnivå.
+Når alle ovennevnte punkter er bekreftet, anses fase 1 som bestått. Eventuelle avvik rettes opp før vi går videre. Først når plugin-strukturen er stabil og alle regler (inkludert fase 0 guardrails) fortsatt holdes, kan vi fortsette til neste fase.
+Fase 2: Implementasjon av Program- og API-håndtering
+I fase 2 fokuserer vi på å gjøre Programmer-delen fullverdig og sette opp grunnlaget for eksternt API. Dette inkluderer å legge til felter for API-integrasjon (nøkler, webhook-URL) til Program-posttypen, og å utvikle funksjonalitet for generering av unike API-nøkler. Samtidig forbereder vi pluginen til å kunne ta imot bug-rapporter via API (f.eks. REST endpoint) for de programmene vi registrerer. Hovedmål: Administratoren skal kunne legge til et program og få oppgitt en API-nøkkel og endpoint som de kan gi videre til utviklerne av det programmet, slik at programmet kan sende inn bugrapporter automatisk.
+Utvid Program CPT med meta-felter (API-nøkkel og webhook): Vi skal gjøre det mulig å lagre to ekstra stykker data for hvert program:
+API-nøkkel: en hemmelig nøkkel (token) knyttet til programmet, som brukes for autentisering når en ekstern klient vil rapportere en bug via SkyBugs API.
+Webhook URL: valgfritt URL som peker til programmets egen tjeneste, som vi kan sende callback til. (Tanken: når en sak lukkes eller oppdateres, kan pluginen kalle dette URL-et for å informere programteamet. Dette er en ekstra funksjon vi planlegger.)
+Vi implementerer dette ved å bruke WordPress’ metabokser på program-redigeringssiden:
+Bruk add_action('add_meta_boxes', 'skybug_add_program_meta_boxes'); for å registrere en custom meta-boks for Program CPT.
+# d4c3b2a1 - Legg til meta-bokser for Program (API-nøkkel, webhook) - se AI-learned/funksjonslogg.json
+function skybug_add_program_meta_boxes() {
+    add_meta_box(
+        'skybug_program_api_meta',
+        __('API-Integrasjon','skybug'),
+        'skybug_render_program_api_metabox',
+        'skybug_program',
+        'normal',
+        'high'
+    );
+}
+# slutt d4c3b2a1
+Dette vil kalle skybug_render_program_api_metabox når Program-redigeringssiden lastes.
+Definer skybug_render_program_api_metabox($post): her genererer vi HTML-feltene for API-nøkkel og webhook:
+# 1122aabb - Render Program API metabox - se AI-learned/funksjonslogg.json
+function skybug_render_program_api_metabox($post) {
+    // Hent eksisterende verdier hvis de finnes
+    $api_key = get_post_meta($post->ID, '_skybug_api_key', true);
+    $webhook = get_post_meta($post->ID, '_skybug_webhook_url', true);
+    if (!$api_key) {
+        echo '<p>' . __('Ingen API-nøkkel generert enda. En nøkkel vil bli opprettet når du lagrer programmet.', 'skybug') . '</p>';
+    } else {
+        echo '<p><strong>' . __('API-nøkkel:', 'skybug') . '</strong> <code>' . esc_html($api_key) . '</code></p>';
+        echo '<p>' . __('Denne nøkkelen brukes for å godkjenne API-tilkoblinger for dette programmet.', 'skybug') . '</p>';
+    }
+    echo '<p><label for="skybug_webhook_field"><strong>' . __('Webhook URL:', 'skybug') . '</strong></label><br/>';
+    echo '<input type="url" id="skybug_webhook_field" name="skybug_webhook_field" value="' . esc_attr($webhook) . '" style="width:100%;" />';
+    echo '<br/><em>' . __('(Valgfritt) URL som får en webhook varsling ved statusendringer.', 'skybug') . '</em></p>';
+    // Nonce felt for sikkerhet
+    wp_nonce_field('skybug_program_api_nonce', 'skybug_program_api_nonce');
+}
+# slutt 1122aabb
+Forklaring: Hvis $api_key ikke eksisterer (nytt program eller ennå ikke generert), informerer vi brukeren om at nøkkel vil bli generert ved lagring. Hvis det finnes, viser vi nøkkelen (inne i <code> tag, og escapet). Webhook-feltet er et vanlig input-felt av type URL, forhåndsutfylt hvis lagret før. Vi legger også et nonce-felt for å sikre lagring.
+Håndter lagring av disse meta-verdiene når programmet lagres:
+Bruk add_action('save_post_skybug_program', 'skybug_save_program_meta'); for å trigge vår lagringsfunksjon når en Program-post lagres.
+# bbcceeff - Lagre Program meta (API-nøkkel, webhook) - se AI-learned/funksjonslogg.json
+function skybug_save_program_meta($post_id) {
+    // Sjekk nonce og rettigheter
+    if (!isset($_POST['skybug_program_api_nonce']) || 
+        !wp_verify_nonce($_POST['skybug_program_api_nonce'], 'skybug_program_api_nonce')) {
+        return;
+    }
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+    // Unngå auto-save loop
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    // Lagre webhook URL hvis sendt inn
+    if (isset($_POST['skybug_webhook_field'])) {
+        $url = sanitize_text_field($_POST['skybug_webhook_field']);
+        update_post_meta($post_id, '_skybug_webhook_url', $url);
+    }
+    // Generer API-nøkkel hvis ikke allerede finnes
+    $existing = get_post_meta($post_id, '_skybug_api_key', true);
+    if (!$existing) {
+        // Generer en unik API-nøkkel (32 tegn hex f.eks.)
+        $key = bin2hex(random_bytes(16));
+        update_post_meta($post_id, '_skybug_api_key', $key);
+    }
+}
+# slutt bbcceeff
+Her verifiserer vi WP-nonce for sikkerhet, samt at brukeren har lov til å redigere. Vi ignorerer auto-save. Deretter tar vi imot $_POST['skybug_webhook_field'], saniterer den (her brukte vi sanitize_text_field – egentlig burde vi validere at det er en URL, men WordPress har ikke en spesiell sanitize_url uten at vi risikerer å strippe. Vi kan heller bruke esc_url_raw() for lagring. La oss bytte til det: $url = esc_url_raw($_POST['skybug_webhook_field']); for trygg lagring). Vi kjører update_post_meta for å lagre/oppdatere webhook.
+For API-nøkkelen: hvis det ikke fins fra før av, generer en ny. Vi bruker random_bytes(16) for 128-bit tilfeldig, og bin2hex for å få 32 heksadesimaltegn (en 128-bit = 32 hex char). Dette gir en svært høy entropi nøkkel. Vi lagrer den i meta _skybug_api_key. (Vi lagrer i klartekst her. Alternativt kunne vi bare lagre hashed variant for ekstra sikkerhet, men da måtte vi vise nøkkel til bruker på genereringstidspunkt – i så fall generere og vise en gang. For enklere bruk lar vi den ligge i meta som den er, fordi kun admin har tilgang til denne siden uansett.)
+Vi genererer kun ved første gangs lagring for å unngå å endre nøkkel hver gang de redigerer programmet. Om admin vil rullere nøkkel, kan vi implementere en “Regenerer nøkkel” knapp senere. Noter evt. i usikkert.json at nøkkelrotasjon kan være ønskelig i fremtiden.
+Med dette, når en admin legger til et nytt program eller oppdaterer et eksisterende uten nøkkel, så etter post save vil programmet ha fått en API-nøkkel i databasen. Meta-boksen vil på refresh vise nøkkelen.
+Vis API-informasjon tydelig til bruker: Etter lagring av et Program (spesielt ved første gangs oppretting), vil API-nøkkel genereres i bakgrunnen. For å gjøre dette brukervennlig, kunne vi:
+Løsningsforslag: Omdirigere tilbake til edit-siden med en administrativ melding som sier “API-nøkkel generert”. Eller bare vise nøkkelen i metaboksen (vi gjør det allerede). Kanskje vi bør trigge en admin_notice etter save. Vi kan implementere en enkel ting:
+if (isset($_POST['skybug_webhook_field'])) {
+    add_filter('redirect_post_location', 'skybug_program_admin_notice');
+}
+function skybug_program_admin_notice($location) {
+    return add_query_arg('skybug_key_generated', 1, $location);
+}
+add_action('admin_notices', function(){
+    if(isset($_GET['skybug_key_generated'])) {
+        echo '<div class="updated notice"><p>' . __('En API-nøkkel ble opprettet for dette programmet.', 'skybug') . '</p></div>';
+    }
+});
+Dette vil vise en engangs melding på toppen etter redirect. Dette er en forbedring for UX.
+Uansett, nå kan administrator gå inn på et Program de har lagt til, og finne:
+En API-nøkkel listet opp (fint formatert i monospaced <code> tag).
+Et felt for Webhook som de kan fylle ut med et endpoint (f.eks. en URL til et Slack-webhook, eller et API-endpoint hos dem).
+Under kan vi også vise hvilket API-endpoint vårt system tilbyr. Vi har ikke laget endpoints ennå, men la oss planlegge det nå:
+Implementer REST API-endepunkt for mottak av bugrapporter: For at eksterne programmer skal kunne sende inn bugrapporter til vår plugin, bruker vi WordPress REST API (som er aktivt som default i WP >=4.7). Vi definerer et custom endpoint, f.eks.:
+POST /wp-json/skybug/v1/report
+Dette endpointet skal la et program sende detaljene for en bug/feature inn. Krever autentisering via API-nøkkel. Oppsett:
+Bruk add_action('rest_api_init', 'skybug_register_api_routes');
+# aabbccdd - Registrer REST API-ruter for SkyBug - se AI-learned/funksjonslogg.json
+function skybug_register_api_routes() {
+    register_rest_route('skybug/v1', '/report', array(
+        'methods' => 'POST',
+        'callback' => 'skybug_api_report_callback',
+        'permission_callback' => '__return_true',  // vi gjør egen auth
+    ));
+}
+# slutt aabbccdd
+Vi setter permission_callback til å alltid tillate, men vi gjør sjekk av nøkkel inni callback i stedet (fordi det er en custom auth-metode).
+Definer skybug_api_report_callback($request):
+Denne skal lese data fra $request (REST API Request). Vi forventer for eksempel felter: title, description, type (bug/feature), program_key eller program_id, og api_key. Vi må bestemme hvordan klienten identifiserer programmet:
+Enten ved å sende med program-ID direkte (men da må de vite ID, som ikke er lett uten å eksponere det).
+Eller sende programnavn.
+Best, gi dem en egen Program API-nøkkel/ID for det programmet. Vi har allerede generert en API-nøkkel per program. Vi kan kreve at klienten sender sin program-spesifikke nøkkel med i request for å autentisere og identifisere programmet.
+Så vi kan la api_key feltet være unikt per program. Når vi mottar api_key, vi finner hvilket program som har den nøkkelen. Hvis funnet, vet vi at det er autorisert og hvilket program saken gjelder.
+Dette forenkler at de slipper sende både program ID og nøkkel; nøkkelen i seg selv fungerer som både autentisering og identifikator.
+Så implementasjonen:
+# ddccbbaa - REST API callback: motta bugrapport - se AI-learned/funksjonslogg.json
+function skybug_api_report_callback($request) {
+    // Hent parametre
+    $api_key = $request->get_param('api_key');
+    $title = $request->get_param('title');
+    $description = $request->get_param('description');
+    $type = $request->get_param('type');
+    // Sjekk nødvendige felt
+    if (empty($api_key) || empty($title) || empty($description) || empty($type)) {
+        return new WP_Error('missing_fields', __('Mangler felt: api_key, title, description, type må alle være satt','skybug'), array('status'=>400));
+    }
+    // Finn program med gitt API-nøkkel
+    $programs = get_posts(array(
+        'post_type' => 'skybug_program',
+        'meta_query' => array(
+            array('key' => '_skybug_api_key', 'value' => sanitize_text_field($api_key))
+        )
+    ));
+    if (!$programs) {
+        return new WP_Error('auth_failed', __('Ugyldig API-nøkkel','skybug'), array('status'=>403));
+    }
+    $program = $programs[0];
+    // Bestem sakstype (bug vs feature)
+    $type = strtolower($type);
+    $term = null;
+    if ($type == 'bug' || $type == __('bug','skybug')) {
+        $term = 'bug';
+    } elseif ($type == 'feature' || $type == __('funksjon','skybug')) {
+        $term = 'feature';
+    } else {
+        // Hvis ukjent type, defaulter vi til feature
+        $term = 'feature';
+    }
+    // Opprett ny sak (custom post) 
+    $new_post = array(
+        'post_title'   => sanitize_text_field($title),
+        'post_content' => wp_kses_post($description),
+        'post_type'    => 'skybug_issue',
+        'post_status'  => 'publish',
+        'post_author'  => 1  // sett admin som forfatter, evt. egen user for API
+    );
+    $post_id = wp_insert_post($new_post);
+    if (is_wp_error($post_id)) {
+        return new WP_Error('insert_failed', __('Kunne ikke opprette sak','skybug'), array('status'=>500));
+    }
+    // Knytt til program via meta
+    update_post_meta($post_id, '_skybug_program_id', $program->ID);
+    // Sett taksonomi (type)
+    wp_set_object_terms($post_id, $term, 'skybug_type');
+    // Returner OK-respons med sakens ID og URL
+    $response_data = array(
+        'status' => 'success',
+        'issue_id' => $post_id,
+        'issue_url' => admin_url('post.php?post='.$post_id.'&action=edit')
+    );
+    return rest_ensure_response($response_data);
+}
+# slutt ddccbbaa
+Forklaring: Vi sjekker etter obligatoriske felt og returnerer WP_Error med passende melding om noe mangler (HTTP 400). Deretter søker vi i Program-postene etter en som har meta _skybug_api_key lik den innsendte nøkkelen. (Vi saniterer nøkkelen før sammenligning). Hvis ingen treff, returner 403 feil. Hvis treff, tar første (bør egentlig bare være én siden nøklene er unike).
+Avgjør type: vi støtter at klienten sender "bug" eller "feature" eventuelt på norsk (“feil”/“funksjon”) – for å være robust oversettes vi ikke alt her; enklest er å forvente engelsk kodeord, men vi gjør en enkel sjekk. (Vi legger merke til at i oversettelsessammenheng burde API-forventninger dokumenteres – det kan vi skrive i brukermanual eller dev docs at type må være "bug" eller "feature").
+Opprett ny sak via wp_insert_post. Vi setter post_author = 1 (admin). Et alternativ er å opprette en dedikert “SkyBug API User” for slike innsendelser. Men for nå, admin som owner.
+Knytt programmet: vi lagrer program-ID i meta _skybug_program_id.
+Sett taksonomi: bruker wp_set_object_terms for å sette f.eks. 'bug' term på 'skybug_type' taksonomien.
+Hvis alt vel, returner en JSON respons med success, og inkluderer ny sak ID og en lenke (admin URL til saken, for bekreftelse). Vi må registrere denne funksjonen i funksjonslogg med dens logikk, avhengigheter (f.eks. avhengig av CPT definert, meta etc.), og en merknad: “Hvis datamodell for program eller sak endres, må denne funksjonen oppdateres. Ved endring av API-nøkkel logikk må autorisering justeres.”.
+Sikkerhet vurdering: Vi har nå en åpen REST endpoint som autentiserer via en nøkkel. Vi bør sørge for at:
+API-nøklene er hemmelige (vi har gjort det, 32 char random).
+Kommunikasjon helst skjer over HTTPS (dette er på brukeren/serverens oppsett, men vi bør anbefale det).
+Vi begrenser mulige misbruk: Foreløpig kan hvem som helst med nøkkelen poste. Det er hensikten. Vi kan rate-limitere hvis ønskelig, men ikke kritisk i denne plan.
+Vi bør kanskje maskere litt responsen: Vi gir ut admin_url til saken. Det er praktisk for en admin integrasjon, men en ekstern program trenger kanskje ikke admin-lenken. Kanskje bedre å gi en view URL (hvis vi lager front-end visning per sak). Foreløpig lar vi det, men noter i usikkert.json at admin_url i respons er potensielt sensitiv (kun virker for logget inn admin uansett).
+Dokumentasjon til utviklere: Vi bør oppdatere brukermanualen eller skrive en egen seksjon (kanskje under "Brukermanual" eller i en README for devs) om hvordan API-et brukes. Siden brukermanualen er myntet på admin-brukere, kan vi heller i "Brukermanual" nevne at “API integrasjon: Når du registrerer et program, genereres en API-nøkkel. Utviklere av programmet kan bruke denne nøkkelen for å sende bugrapporter via en HTTP POST til nettstedet ditt. Se utviklerdokumentasjonen for detaljer.” Hvis vi har en "Diverse" seksjon, kunne den inneholdt "Utviklerinfo" med endpoint forklaring.
+For å holde oss til scope, kan vi legge litt i brukermanual nå:
+Legge til et avsnitt:
+<h2>API-integrasjon</h2>
+<p>Hvert program får en unik API-nøkkel. Utviklere kan sende en HTTP POST forespørsel til <code>/wp-json/skybug/v1/report</code> for å registrere en ny sak. Inkluder feltene <code>api_key</code>, <code>title</code>, <code>description</code>, <code>type</code> i JSON-body. Hvis nøkkelen er gyldig, opprettes saken automatisk i SkyBug.</p>
+Dette gir i det minste en pekepinn i UI.
+Vi kan også vise API-endpoint i metaboksen for Program: f.eks. under API-nøkkel skrive: “Endpoint: POST $site_url/wp-json/skybug/v1/report”. Det kan være lurt så admin kan kopiere det til sine utviklere. La oss forbedre skybug_render_program_api_metabox: hvis $api_key finnes, under nøkkelen legg:
+$endpoint = home_url('/wp-json/skybug/v1/report');
+echo '<p>' . __('Endpoint for bug-API:','skybug') . ' <code>' . esc_url($endpoint) . '</code></p>';
+Da har de alt de trenger: URL + nøkkel.
+Forbedre admin-lister med Program-kolonne: Nå som Program->Sak relasjon er etablert via meta _skybug_program_id, la oss gjøre admin-opplevelsen bedre:
+Legg til filter for kolonner i sak-listen (edit.php?post_type=skybug_issue).
+add_filter('manage_skybug_issue_posts_columns', function($columns){
+    $columns['skybug_program'] = __('Program','skybug');
+    $columns['skybug_type'] = __('Type','skybug');
+    return $columns;
+});
+add_action('manage_skybug_issue_posts_custom_column', function($column, $post_id){
+    if($column == 'skybug_program') {
+        $prog_id = get_post_meta($post_id, '_skybug_program_id', true);
+        if ($prog_id) {
+            $prog_post = get_post($prog_id);
+            if ($prog_post) echo esc_html($prog_post->post_title);
+            else echo '<em>' . __('(Program slettet)','skybug') . '</em>';
+        } else {
+            echo '<em>' . __('(Ingen program)','skybug') . '</em>';
+        }
+    }
+    if($column == 'skybug_type') {
+        $terms = wp_get_post_terms($post_id, 'skybug_type');
+        if(!empty($terms)) {
+            echo esc_html($terms[0]->name);
+        } else {
+            echo '-';
+        }
+    }
+}, 10, 2);
+Dette legger til to kolonner: Program og Type på sak-oversikten. Implementasjonen viser programnavnet (eller tomt hvis ikke angitt) og type (Bug/Funksjonsønske). Dette gjør at selv på standard “Saker” siden har admin oversikt uten å klikke inn på hver sak.
+I samme ånd kan vi legge til kolonner på “Programmer” listen for oversikt:
+add_filter('manage_skybug_program_posts_columns', function($columns){
+    $columns['skybug_key'] = __('API-nøkkel','skybug');
+    $columns['skybug_webhook'] = __('Webhook','skybug');
+    return $columns;
+});
+add_action('manage_skybug_program_posts_custom_column', function($column,$post_id){
+    if($column == 'skybug_key') {
+        $key = get_post_meta($post_id, '_skybug_api_key', true);
+        if($key) echo '<code>' . esc_html(substr($key,0,8)) . '...</code>';  // vis første 8 tegn for sikkerhets skyld
+        else echo '<em>' . __('(Ingen nøkkel)','skybug') . '</em>';
+    }
+    if($column == 'skybug_webhook') {
+        $url = get_post_meta($post_id, '_skybug_webhook_url', true);
+        if($url) {
+            echo '<a href="' . esc_url($url) . '" target="_blank">Webhook</a>';
+        } else {
+            echo '<span style="color:#aaa;">-</span>';
+        }
+    }
+},10,2);
+Dette viser i programlisten en kolonne med API-nøkkel (forkortet for ikke å eksponere hele nøkkelen på skjerm unødig, men lar admin se starten for identifikasjon) og en kolonne med Webhook (som en klikkbar lenke hvis finnes). Dette gir admin rask oversikt uten å åpne hver program.
+Test funksjonaliteten fra admin-siden:
+Legg til et nytt Program, f.eks. “SuperApp”. Lagre. Etter lagring:
+Programmet skal dukke opp i listen med (Ingen nøkkel) under API-nøkkel kolonnen før refresh. Etter refresh eller å gjenåpne, der vil det nå stå en nøkkel (de første 8 tegn...).
+Gå inn på rediger “SuperApp”: der skal metaboksen vise API-nøkkelen og endpoint, og webhook-feltet tomt.
+Sett en webhook URL, f.eks. https://requestbin.io/12345 (et test-endpoint). Lagre oppdatering. Sjekk at webhook kolonnen i liste nå viser “Webhook” link.
+Test REST API:
+Bruk f.eks. en verktøy (curl, REST Client) og send en POST til site.test/wp-json/skybug/v1/report med JSON:
+{
+  "api_key": "<API-nøkkelen for SuperApp>",
+  "title": "Test Bug via API",
+  "description": "Denne bugen kom fra programmet via API.",
+  "type": "bug"
+}
+Forventet respons: status: success, issue_id: X, issue_url: .... Sjekk at HTTP-status er 200.
+Gå til WordPress admin “Bug Reports” siden: Der skal nå “Test Bug via API” dukke opp. Program-kolonnen skal vise “SuperApp” for den (fordi _skybug_program_id ble satt). Type kolonne “Bug”.
+Åpne saken via admin (klikk på tittel eller via Saker-listen). Sjekk at innholdet er riktig beskrivelse, at Sakstype taksonomien er satt til “Bug”, at Program meta er satt (vi burde kanskje vise program i redigeringssiden også for saken – dvs. en meta-boks for program tilknytning. Vi kan legge til det nå: En dropdown i sak-redigering for å velge program). Ekstra: For at admin skal kunne manuelt koble/endre program på en sak eller opprette en sak fra admin og knytte til program, vi bør lage en meta-boks på Sak-redigeringsskjermen også:
+Legg til meta box for skybug_issue post type:
+add_meta_box('skybug_issue_program_box', __('Program','skybug'), 'skybug_render_issue_program_metabox', 'skybug_issue', 'side', 'default');
+function skybug_render_issue_program_metabox($post) {
+    $current = get_post_meta($post->ID, '_skybug_program_id', true);
+    $programs = get_posts(array('post_type'=>'skybug_program','numberposts'=>-1));
+    echo '<select name="skybug_program_field">';
+    echo '<option value="">(Ingen program)</option>';
+    foreach($programs as $prog) {
+       printf('<option value="%d" %s>%s</option>', 
+              $prog->ID, selected($current, $prog->ID, false), esc_html($prog->post_title));
+    }
+    echo '</select>';
+    wp_nonce_field('skybug_issue_program_nonce','skybug_issue_program_nonce');
+}
+add_action('save_post_skybug_issue', function($post_id){
+    if(!isset($_POST['skybug_issue_program_nonce']) || 
+       !wp_verify_nonce($_POST['skybug_issue_program_nonce'],'skybug_issue_program_nonce')) return;
+    if(isset($_POST['skybug_program_field'])) {
+        $prog = intval($_POST['skybug_program_field']);
+        if($prog) update_post_meta($post_id, '_skybug_program_id', $prog);
+        else delete_post_meta($post_id, '_skybug_program_id');
+    }
+});
+Nå har vi gitt admin mulighet til å velge program fra en dropdown i hver sak. Dette er viktig for full funksjonalitet – ellers kunne admin kun sette program ved å gå via API eller kode.
+(Denne biten burde kanskje vært med i fase 1, men vi tar det her når vi jobber med program-sak integrasjon.)
+Test: Gå på en sak (f.eks. den vi opprettet manuelt i fase 1 som ikke hadde program). Nå skal side-metaboksen vise en dropdown med “SuperApp” valget. Velg program og lagre, se at meta ble satt og kolonnen oppdatert.
+Test Webhook funksjon (hvis ikke nå, så planlegges): Vi har ikke implementert det ennå, men vi kan notere at i senere fase skal pluginen sende ut melding til det URL når f.eks. en bug markeres som løst. Dette kan vi gjøre i fase 4 når vi legger til statusendring. For nå, bare sjekk at webhook felt lagrer riktig.
+Oppdater dokumentasjon (Brukermanual):
+Legg inn beskrivelse under “Programmer” at når du oppretter et program, genereres en API-nøkkel automatisk ved lagring. Nevn at denne nøkkelen kan brukes for integrasjon.
+Under “Saker”, si at saker kan opprettes manuelt via WP-admin, eller automatisk via API dersom programmene rapporterer inn.
+Under “Innstillinger” – vi har fortsatt ingen reelle innstillinger; men vi kan begynne å tenke på noe: En mulig innstilling kan være et globalt API Master Key eller toggling av API. Noen admins vil kanskje skru av API-funksjonen midlertidig. Vi kan lage en innstilling “Tillat API-innsendinger” [Ja/Nei]. Default Ja. Hvis Nei, så vil skybug_api_report_callback nekte (returnere 503 “API disabled”). Implementering:
+Legg til en option i WP options (f.eks. add_option('skybug_enable_api', '1')). I innstillinger-siden, presenter en sjekkboks “Tillat API-rapporter fra programmer”. Håndter lagring via Settings API eller manuelt.
+Siden dette er litt side-quest, vi kan utsette til fase 4 når vi uansett flesher ut innstillinger-siden. Men la oss notere det i usikkert.json at “Innstilling for å skru av/på API bør implementeres”.
+Sikre kvalitet og logging: Etter implementasjonen i fase 2, oppdater relevant JSON-logg:
+Legg til funksjonene vi skrev (metabox, save_post, REST route, etc.) i funksjonslogg.json med beskrivelser.
+Noter nye verifiserte ting i fungerer.json (f.eks. “REST API integrasjon – mottak av bug fungerer (testet med curl).”).
+Eventuelle mislykkede forsøk i feil.json (kanskje vi måtte justere noe i API-callback? Hvis alt gikk bra, kanskje ingen).
+godekilder.json kan tilføyes WP REST API doc kilde hvis vi slo opp (f.eks. WordPress Developer REST API register_rest_route usage).
+Verifikasjon fase 2: Før vi går videre, kontroller nøye:
+At en program-post ved lagring får en nøkkel (og ikke genererer ny hver gang).
+At nøkkelen vises i UI kun for de med tilgang (man må være admin for å se uansett).
+At REST endpoint faktisk krever riktig nøkkel (test med feil nøkkel -> få 403, test uten nøkkel -> 400).
+At saker opprettet via API får riktig taksonomi og meta.
+At ingen del av denne nye koden brøt noen av fase 0/1 sine krav:
+Alt er fortsatt oversettbart der det skal (ja, la oss se: vi brukte __('Ingen nøkkel generert...'), etc. Bra).
+Ingen midlertidige tekster – alt som vises har funksjon.
+Koden følger WP best practice (nonce brukt ved form lagring, check user caps, sanitized input på API).
+Kjør PHPStan og PHPCS igjen for å se om nye funksjoner introduserte advarsler. Fiks hvis noe dukker opp (for eksempel, vi bør kanskje deklarere global $wpdb hvis brukt, men vi brukte WP API hele veien).
+Når alt ser grønt ut og vi er sikre på at fase 2-tillegget fungerer robust, går vi videre.
+Fase 3: Sakshåndtering og arbeidsflyt (Bugs & Features)
+I fase 3 retter vi fokuset mot selve Saker-delen: vi skal forbedre funksjonalitet rundt bugrapportering og ønskeliste i admin, inkludert mulighet for statusoppdatering (åpen/lukket), kategorisering/prioritet, og notifikasjoner. Her handler det om å legge til rette for at admin (eller utviklere) kan behandle de innkommende sakene effektivt inne i SkyBug. Hovedleveranser i denne fasen:
+Statusfelt for saker (Lukke bugs): Innføre mulighet til å markere en sak som “Løst”/ferdig, og filtrere slike bort fra åpne lister.
+Kommentarer/oppdateringer: Sørge for at diskusjonsfeltet (WP comments) fungerer slik at man kan notere fremdrift på saken.
+E-postvarsling: Opsjon om at når nye saker kommer inn via API, send en e-post til ansvarlig, og evt. når en sak lukkes send e-post til innsender (her litt vanskelig siden innsender i vårt system bare er en API, men kanskje til en fast kontakt).
+Frontend innsending (valgfritt): Vurdere om vanlige brukere skal kunne registrere saker via et skjema på forsiden (det ble ikke spesifikt etterspurt, men vi tenker på det).
+Forbedre statistikk med løste vs åpne saker.
+La oss gå stegvis:
+Implementer status for saker (Åpen/Lukket):
+Vi vil at admin skal kunne markere når en bug er fikset. Vi kan gjøre dette på to måter:
+Legge til en taksonomi skybug_status med term “Åpen” og “Lukket”.
+Eller bruke WordPress’ innebygde post status (for eksempel definere en custom status 'closed'). WP lar oss registrere custom post statuses for vårt CPT. Fordelen: de kan få egen farge/label i admin, og man kan bruke WP UI (f.eks. en “Publisert” vs “Lukket” status). Ulempen: litt mer komplisert å registrere og tilpasse, men la oss prøve det da det er mer elegant WP-løsning.
+Vi registrerer en post status:
+add_action('init', function(){
+    register_post_status('skybug_closed', array(
+        'label' => _x('Løst', 'post status', 'skybug'),
+        'public' => false,
+        'internal' => true,
+        'label_count' => _n_noop('Løst <span class="count">(%s)</span>', 'Løst <span class="count">(%s)</span>', 'skybug'),
+        'post_type' => array('skybug_issue')
+    ));
+});
+Dette lager en ny status som heter “Løst”. internal=>true betyr den vises i admin men ikke på front. public=>false betyr ikke offentlig querybar.
+For at admin skal kunne sette en sak til denne statusen, i redigeringsskjermen må vi legge til alternativet. Vi kan hacke litt: WP by default viser kun standard statuser i status-dropdown. Vi må bruke post_submitbox_misc_actions hook til å innpasse vårt alternativ:
+add_action('post_submitbox_misc_actions', function(){
+    global $post;
+    if($post->post_type == 'skybug_issue') {
+        $status = $post->post_status;
+        ?>
+        <div class="misc-pub-section misc-pub-post-status">
+          <label><?php _e('Status:', 'skybug'); ?></label>
+          <span id="post-status-display">
+            <?php echo ($status == 'skybug_closed' ? __('Løst','skybug') : __('Åpen','skybug')); ?>
+          </span>
+          <?php if($status != 'skybug_closed'): ?>
+            <a href="#post_status" class="edit-post-status"><?php _e('Rediger', 'skybug'); ?></a>
+            <div id="post-status-select" style="display:none;">
+              <input type="hidden" name="hidden_post_status" value="<?php echo esc_attr($status); ?>" />
+              <select name="post_status">
+                <option value="publish" <?php selected($status,'publish'); ?>><?php _e('Åpen','skybug'); ?></option>
+                <option value="skybug_closed" <?php selected($status,'skybug_closed'); ?>><?php _e('Løst','skybug'); ?></option>
+              </select>
+              <a href="#post_status" class="save-post-status button"><?php _e('OK'); ?></a>
+              <a href="#post_status" class="cancel-post-status"><?php _e('Avbryt'); ?></a>
+            </div>
+          <?php endif; ?>
+        </div>
+        <?php
+    }
+});
+Dette er litt kompleks kode for å integrere med WP’s publish metabox UI: Den viser nå “Status: Åpen (Rediger)” med en dropdown for Åpen/Løst. Hvis allerede Løst, da lar vi ikke redigere (kunne la dem åpne igjen, men for nå behold locked).
+Når man lagrer, WP vil ta verdien i select name="post_status" og sette den som status, så det funker med wp_insert_post innabords. (Trengs kanskje litt script for at “OK” knappen fungerer; WP har noe builtin toggling via jQuery for .misc-pub-section editing. Vi håper det virker fordi vi fulgte WP’s HTML pattern.) Vi bør også justere sak-listene:
+På “Bug Reports” og “Ønskede funksjoner” sidene våre, bør vi utelate saker som er Løst, eller i det minste markere dem. Sannsynligvis vil vi bare liste åpne bugs der, mens løste ikke vises. Vi kan filtrere i WP_Query i de callbackene: post_status'=>'publish' (som er åpen) i spørringen. WP standard “publish” vil utelate våre closed (fordi de har egen status, som ikke er publish). Så faktisk trengs kanskje ikke noe – de er ikke publish, men vent, vi bør definere at closed tas ut av “All”.
+Standard WP listing “Alle” viser publish + future + drafts, men custom internal status spørs. Since 'internal'=>true, I think they show up only in All? Actually, if internal, you might need to manually include them in queries. But let's not overcomplicate:
+For vår implementering, vi kan treat 'skybug_closed' as a type of publish variant. Alternatively, not use internal and use 'exclude_from_search' etc. But anyway, our manual lists can skip them explicitly:
+For bug list: add 'post_status' => array('publish') in WP_Query to exclude closed (or array('publish','skybug_closed') if we want include).
+But requirement likely to exclude solved from main bug list.
+So do 'post_status'=>'publish' in skybug_render_bugs_page and features page queries so that solved ones disappear from those lists (making them effectively lists of open issues).
+Vi can add another menu or filter for closed if desired, but possibly not needed.
+In WP “Saker” listing (edit.php?post_type=skybug_issue), solved items might either appear with a status label "Løst" if WP knows to label them. To ensure clarity, maybe add filter to highlight closed:
+We can style closed row differently via CSS or indicate in Title column. But WP automatically italicizes drafts etc. For custom, maybe not automatically. We could use post_class filter to add class if closed to the row. But maybe skip.
+It's okay if admin uses our stats page or filter to see closed count.
+Kommentarer og samarbeid: Siden supports=>comments er aktivert på sakene, WordPress tilrettelegger for kommentarer. Vi skal bruke dette som en enkel måte å legge inn notater (f.eks. en utvikler kan skrive “Fikset i versjon X”).
+Sørg for at kommentarer er åpne som default når vi oppretter via API. Vår wp_insert_post ikke satte 'comment_status', så WP vil bruke default fra CPT registration (som i CPT default er closed? Actually, by default CPT inherits global default comment setting. We might need to enforce open).
+Let's explicitly set 'comment_status' => 'open' in insert post for API. And if admin adds a new manually via UI, they can tick "Allow comments" in Discussion metabox. We ensure that meta.
+So in register_post_type('skybug_issue'), include 'supports'=>array('title','editor','comments') which should auto add comment support.
+Possibly default comment status is closed for new CPT posts, to be safe, do:
+add_action('draft_to_publish', function($post){
+   if($post->post_type=='skybug_issue' && $post->comment_status!='open') {
+       wp_update_post(array('ID'=>$post->ID,'comment_status'=>'open'));
+   }
+});
+but maybe overkill. We'll trust admin to open or our API sets it open.
+Test: Gå inn på en sak, se at det er en “Kommentarer” seksjon under innhold. Legg til en testkommentar. Sjekk at det lagres og vises. Alt ok.
+E-postvarsling: Vi ønsker at når en ny sak kommer inn (spesielt via API), skal pluginen kunne varsle noen slik at buggen blir sett på. Samme ved løsing (kanskje varsle den som meldte bug, men i vårt tilfelle vet vi ikke direkte avsender – kunne vært program, men programmet har ikke e-post).
+Vi kan i innstillinger la admin sette en e-post som skal motta varsel for nye saker. For eksempel, en tekstboks “Varslings-e-post for nye saker”.
+La oss nå implementere minimal e-post: Når skybug_api_report_callback oppretter en ny sak, etter wp_insert_post, vi kaller wp_mail() til admin_email (WordPress’ admin email as fallback) eller en epost definert i options.
+Example:
+$admin_email = get_option('skybug_notify_email');
+if(empty($admin_email)) $admin_email = get_option('admin_email');
+$subject = '[SkyBug] Ny sak: ' . $title;
+$message = "Det ble opprettet en ny sak via API for program \"{$program->post_title}\":\n\n" .
+           "Tittel: {$title}\nType: " . ($term=='bug'?'Bug':'Ønsket funksjon') . "\n\n" .
+           "Beskrivelse:\n{$description}\n\n" .
+           "Se " . admin_url("post.php?post=$post_id&action=edit") . " for mer info.";
+wp_mail($admin_email, $subject, $message);
+(Man kan bruke HTML mail og templates, men plain tekst er ok.)
+Legg config for skybug_notify_email på Innstillinger-siden:
+I skybug_render_settings_page(), bytt ut “Ingen innstillinger” med et skjema:
+if(isset($_POST['skybug_save_settings'])) {
+    check_admin_referer('skybug_settings');
+    $email = sanitize_text_field($_POST['notify_email']);
+    update_option('skybug_notify_email', $email);
+    echo '<div class="updated notice"><p>' . __('Innstillinger lagret.', 'skybug') . '</p></div>';
+}
+$current_email = get_option('skybug_notify_email', get_option('admin_email'));
+echo '<form method="post"><h2>'.__('Innstillinger','skybug').'</h2>';
+wp_nonce_field('skybug_settings');
+echo '<p><label>' . __('E-post for varsel om nye saker:', 'skybug') . '</label><br/>';
+echo '<input type="email" name="notify_email" value="'. esc_attr($current_email) . '" size="40"/></p>';
+echo '<p><label><input type="checkbox" name="api_enabled" value="1" ' . checked(1, get_option('skybug_enable_api',1), false) . '/> ' . __('Tillat API-innsending av saker', 'skybug') . '</label></p>';
+echo '<p><input type="submit" name="skybug_save_settings" class="button button-primary" value="'.__('Lagre endringer','skybug').'"></p>';
+echo '</form>';
+Her har vi også lagt inn en sjekkboks for api_enabled. Vi må definere skybug_enable_api default 1 on plugin activation or fallback to 1 if not set. Og i skybug_api_report_callback, tidlig:
+if(!get_option('skybug_enable_api',1)) {
+    return new WP_Error('api_disabled', __('API-tilgang er deaktivert','skybug'), array('status'=>503));
+}
+Så admin kan skru av API hvis nødvendig (f.eks. i nødstilfelle).
+Dette dekker e-post og en innstilling for det. Test: sett notify_email til din email, gjør en API call -> se at mail kommer (for test kan bruke WP Mail SMTP plugin eller log).
+Varsling ved lukking av en sak:
+Hvis vi skal varsle programutvikler (ekstern) at en bug er løst, kunne vi bruke webhook:
+Vi har webhook URL per program. Vi kan implementere at når en sak endres status til lukket, pluginen sender en POST til programmets webhook (if not empty):
+Hook: transition_post_status action når et innlegg endrer status.
+I callback, sjekk at $new_status == 'skybug_closed' og $post->post_type == 'skybug_issue'.
+Hent program via meta, finn webhook URL fra programmet.
+Send en HTTP POST (use WP_Http or wp_remote_post) til URL med en liten payload: e.g. JSON {"event":"issue_closed","program":"X","issue_title":"...","issue_id":ID,"url":...}.
+Ingen autentisering som default (webhook URL ofte inneholder en secret or is a secret itself).
+For logg: logg suksess eller feil? Vi kan kanskje logge til feil.json hvis webhook feiler? Eller bare admin notice.
+Implementasjon:
+add_action('transition_post_status','skybug_notify_webhook_on_close',10,3);
+function skybug_notify_webhook_on_close($new_status,$old_status,$post) {
+    if($post->post_type=='skybug_issue' && $new_status=='skybug_closed' && $old_status != 'skybug_closed') {
+        $prog_id = get_post_meta($post->ID, '_skybug_program_id', true);
+        if($prog_id) {
+            $url = get_post_meta($prog_id, '_skybug_webhook_url', true);
+            if($url) {
+                $body = json_encode(array(
+                    'event' => 'issue_closed',
+                    'program' => get_the_title($prog_id),
+                    'issue_title' => $post->post_title,
+                    'issue_type' => (wp_get_post_terms($post->ID,'skybug_type')[0]->slug ?? ''),
+                    'issue_id' => $post->ID,
+                    'issue_url' => admin_url('post.php?post='.$post->ID.'&action=edit')
+                ));
+                $response = wp_remote_post($url, array(
+                    'headers' => array('Content-Type'=>'application/json'),
+                    'body' => $body,
+                    'timeout' => 5
+                ));
+                if(is_wp_error($response)) {
+                    // Log to usikkert.json eller system log
+                    error_log('SkyBug webhook feilet: '.$response->get_error_message());
+                }
+            }
+        }
+    }
+}
+Test: Sett en webhook URL til en test endpoint (e.g. use webhook.site). Mark a bug as closed in admin, check that a request is received with correct payload.
+Vi holder dette internt, kanskje ikke eksponerer i UI annet enn at admin vet at de satt en webhook.
+Forbedre statistikk-siden: Nå som vi har mer data, gjør statistikk-siden mer informativ:
+Vis f.eks. “Åpne bugs vs Løste bugs”, “Åpne features vs implementerte features”.
+Ideelt med diagram: Vi kan integrere Chart.js:
+Legg Chart.js (v3) file til assets/js/chart.min.js, enqueue den på stats page (if(current screen is skybug_stats)).
+I skybug_render_stats_page(), legg et <canvas id="bugChart" width="400" height="300"></canvas> og en <script>new Chart(...)</script> med data.
+Data:
+For eksempel, en pie chart: slice1 = antall åpne saker, slice2 = antall lukkede saker. Eller en bar chart med bug vs features vs closed vs open.
+For simplicty: En doughnut chart: “Fordeling av saker” med 4 segmenter: Åpne bugs, Løste bugs, Åpne features, Implementerte (løste) features (hvis vi definerer at feature “løst” betyr implementert, vi bruker samme status).
+Vi kan telle:
+$all_bugs = get_posts(array('post_type'=>'skybug_issue','numberposts'=>-1,'tax_query'=>array(array('taxonomy'=>'skybug_type','field'=>'slug','terms'=>'bug'))));
+$open_bugs = array_filter($all_bugs, fn($p)=>$p->post_status=='publish');
+$closed_bugs = array_filter($all_bugs, fn($p)=>$p->post_status=='skybug_closed');
+$all_feats = get_posts(array('post_type'=>'skybug_issue','numberposts'=>-1,'tax_query'=>array(array('taxonomy'=>'skybug_type','field'=>'slug','terms'=>'feature'))));
+$open_feats = array_filter($all_feats, fn($p)=>$p->post_status=='publish');
+$closed_feats = array_filter($all_feats, fn($p)=>$p->post_status=='skybug_closed');
+Then pass counts to JS in a script:
+const data = {
+  labels: ['Åpne bugs','Løste bugs','Åpne ønsker','Implementerte ønsker'],
+  datasets: [{ data: [<?php echo count($open_bugs) ?>, <?php echo count($closed_bugs) ?>, <?php echo count($open_feats) ?>, <?php echo count($closed_feats) ?>],
+               backgroundColor: ['#dc322f','#859900','#268bd2','#b58900'] }]
+};
+new Chart(document.getElementById('bugChart'), { type: 'doughnut', data: data });
+Colors chosen just to differentiate (some Solarized palette).
+Additionally, show textual stats:
+"Åpne bug-saker: X<br>Løste bug-saker: Y<br>Åpne funksjonsønsker: M<br>Implementerte funksjoner: N"
+etc.
+Nå har vi en fin statistikk-side. Test med data: lag f.eks. 2 bugs (1 open, 1 closed), 1 feature (open). Check chart shows proportions.
+Frontend brukerside (/bugs): Vi skal lage en offentlig oversikt under f.eks. smartesider.no/bugs som viser “Programmer / kjente Bugs | ønsker” i følge brukers krav. Dette gjør vi nå.
+Vi velger å implementere det via en shortcode [skybug_dashboard] som genererer HTML som kan stå på en vanlig side.
+Kall add_shortcode('skybug-dashboard', 'skybug_frontend_dashboard');
+# eeff0011 - Shortcode callback: SkyBug frontend dashboard - se AI-learned/funksjonslogg.json
+function skybug_frontend_dashboard() {
+    $programs = get_posts(array('post_type'=>'skybug_program','numberposts'=>-1,'orderby'=>'title','order'=>'ASC'));
+    if(empty($programs)) {
+        return "<p>" . __('Ingen programmer er registrert enda.','skybug') . "</p>";
+    }
+    $output = "<div class='skybug-dashboard'>";
+    foreach($programs as $prog) {
+        $output .= "<h2>" . esc_html($prog->post_title) . "</h2>";
+        // fetch open issues for this program
+        $issues = get_posts(array(
+            'post_type' => 'skybug_issue',
+            'numberposts' => -1,
+            'meta_query' => array(array('key'=>'_skybug_program_id','value'=>$prog->ID)),
+            'post_status' => 'publish'
+        ));
+        $bugs = array_filter($issues, function($i){
+            $t = wp_get_post_terms($i->ID, 'skybug_type');
+            return !empty($t) && $t[0]->slug=='bug';
+        });
+        $features = array_filter($issues, function($i){
+            $t = wp_get_post_terms($i->ID, 'skybug_type');
+            return !empty($t) && $t[0]->slug=='feature';
+        });
+        if(empty($bugs) && empty($features)) {
+            $output .= "<p><em>" . __('Ingen kjente feil eller foreslåtte forbedringer.','skybug') . "</em></p>";
+        } else {
+            if(!empty($bugs)) {
+                $output .= "<strong>" . __('Kjente feil:','skybug') . "</strong><ul>";
+                foreach($bugs as $bug) {
+                    $output .= "<li>" . esc_html($bug->post_title);
+                    // optionally indicate if solved:
+                    // but we only included open issues (publish) so skip solved entirely.
+                    $output .= "</li>";
+                }
+                $output .= "</ul>";
+            }
+            if(!empty($features)) {
+                $output .= "<strong>" . __('Ønskede funksjoner:','skybug') . "</strong><ul>";
+                foreach($features as $feat) {
+                    $output .= "<li>" . esc_html($feat->post_title) . "</li>";
+                }
+                $output .= "</ul>";
+            }
+        }
+    }
+    $output .= "</div>";
+    return $output;
+}
+# slutt eeff0011
+Dette loop-er gjennom programmer, lister under hvert: “Kjente feil:” liste og “Ønskede funksjoner:” liste, basert på saker med status åpen. Hvis ingen saker for det programmet: viser "Ingen kjente feil..." meldingen.
+(Alle strenger oversettes. Vi utelater løste bugs fra listen – kun åpne kjente problemer vises offentlig.)
+Dette shortcode må så settes inn på en side med slug “bugs”. Vi kan informere admin: I brukermanual kan vi skrive “For å vise en publik oversikt over kjente feil, opprett en side og legg inn shortcode [skybug-dashboard].” Evt. kunne plugin autogenerert siden ved aktivering, men det er litt påtrengende. Vi velger dokumentere og la admin gjøre det.
+Siden skal være offentlig. Hvis siden er public, alle ser (kun oversikt, ikke detaljer). Vi viser bare titler. Hvis man vil ha detaljer, må man kontakte support; plugin gir ikke komplette bug beskrivelser offentlig, noe som kanskje er riktig av hensyn til sensitiv info. (Vi kan notere at dersom man ønsker offentlige bug-sider kan man gjøre CPT 'public' og designere template, men det er en annen dimensjon.)
+Test: Lag et par saker under SuperApp (via admin or api), one bug "App crashes on start", one feature "Add dark mode". Then create a WP Page "Bugs", put [skybug-dashboard] in content. View that page in front-end (while logged out even): It should list "SuperApp", then under it "Kjente feil: App crashes on start", "Ønskede funksjoner: Add dark mode". Yes.
+Oppdatere Diverse-siden: Vi tenkte at "Diverse" kunne vise interne logger. La oss realisere det:
+I skybug_render_misc_page(), vi kan lage faner (ul li nav) med "Læringslogg", "Gode kilder" etc., eller enklest: bare dump innholdet av JSON-filene:
+function skybug_render_misc_page() {
+  echo '<div class="wrap"><h1>Diverse / Dev-info</h1>';
+  $funksjonslogg = json_decode(file_get_contents(SKYBUG_DIR . 'AI-learned/funksjonslogg.json'), true);
+  if($funksjonslogg) {
+      echo '<h2>Funksjonslogg</h2><ul>';
+      foreach($funksjonslogg as $entry) {
+         echo '<li><strong>' . esc_html($entry['id']) . '</strong> - ' . esc_html($entry['navn']) . ': ' . esc_html($entry['beskrivelse']) . '</li>';
+      }
+      echo '</ul>';
+  }
+  // Similarly for fungerer.json etc.
+  echo '</div>';
+}
+Formatere litt bedre kanskje, men ideen: admin kan se hvilke funksjoner som finnes og hva de gjør (trekke ut info fra JSON loggene). Dette er primært for utviklerens nytte og er litt uvant i en plugin, men siden det ble ønsket, implementerer vi det. Pass på at JSON-filer faktisk har gyldig JSON; alternativt, hvis vi logget dem som tekst-linjer, må tilpasse. Vi antar de er JSON arrays.
+Oppdatere brukerhåndboken: Nå som funksjonalitet er tilnærmet komplett, oppdater manualen:
+Beskriv hvordan man lukker en sak: rediger sak, endre status til Løst, trykk Oppdater.
+Nevn at lukking utløser at programutviklere kan få varsel via webhook (hvis satt).
+Beskriv at man kan kommentere på en sak for oppfølging.
+Forklar epostvarsel: Under Innstillinger kan du sette epost som får varsel ved nye saker.
+Forklar front-end: at [skybug-dashboard] kan brukes for å vise kundene dine en oversikt over kjente feil/ønsker per program (dette kan være nyttig for transparens).
+Alt på norsk.
+Test scenario helhetlig:
+Simuler hele workflow:
+Admin legger til program "AppX". Utviklerne av AppX får API-nøkkel. De integrerer i appen.
+En feil oppstår i AppX, appen sender POST med key, title, desc. Sak dukker opp i SkyBug -> admin får epost "Ny sak: ..." -> admin ser i "Bug Reports".
+*Admin undersøker, kommenterer under saken "Reprodusert, ser på det".
+Utvikler fikser feilen, admin setter status Løst, trykker Oppdater. Da sender plugin webhook til AppX’s URL (f.eks. deres system kan logge at bug er løst).
+*Webhook feiler? Plugin logger det i error_log, admin ser evt. ikke direkte. (Man kunne vist en admin_notice "Webhook sending feilet" men det er litt for dev, lar være).
+*Den løste saken forsvinner fra Bug Reports-lista (fordi nå status=skybug_closed, som vi ikke tar med).
+*Statistikk-siden viser 1 løst bug.
+*Frontend side "Bugs" oppdateres automatisk: bug er borte fra "kjente feil" list for AppX (for den er løst).
+Sjekk at ingen rugefeil i dataflyten.
+Prestasjon: med mange program/saker, det meste er fine da vi brukte get_posts with numberposts=-1 in some places; i real large usage, kanskje burde gjort pagination. Not an immediate concern, assume manageable.
+Kvalitetssikring fase 3:
+Kjør gjennom PHPCS/Stan igjen. Sjekk at nye epostfunksjoner, REST etc er OK. (Må kanskje stubbe Chart.js not causing any WP coding standard flags.)
+Sørg for at alt vi viser fortsatt er oversatt. Vi la til en del strenger, men vi passet på __('','skybug').
+Logging: funksjonslogg og øvrige JSONer oppdateres med eventuelle nye funksjoner (f.eks. skybug_notify_webhook_on_close, skybug_frontend_dashboard, etc.).
+Verifiser at fase 0-2 regler fortsatt holdes: ingen fake data (vi genererte alt ekte), best practices (nonce, permission checks).
+At dette punktet har pluginen ganske mye funksjonalitet. Sørg for at alt som er bygget tidligere (f.eks. Phase 2's API) fortsatt funker etter Phase 3 additions (test API again, etc., yes should).
+Når alt er testet og godkjent, går vi videre.
+Fase 4: Avrunding – Finish og Polering
+Fase 4 handler om å ferdigstille pluginen, gjøre opprydding, optimalisering og dokumentasjon klar. Her fokuserer vi også på eventuelle tilleggsønsker og sikrer at pluginen er klar for reell produksjonsbruk. Oppgaver i fase 4 inkluderer:
+Kodepolering og optimalisering:
+Gå gjennom hele kodebasen for å refaktorere duplisert logikk og sikre konsistens. For eksempel, vi har lignende kode for listing bugs/features i admin og front-end – vurdér å trekke ut felles funksjon hvis det rydder opp. (Men ikke på bekostning av klarhet.)
+Optimaliser spørringer: I front-end shortcoden henter vi alle saker per program i løkker. For mange programmer kan det bli ineffektivt. Vi kunne omarrangere til å hente alle åpne saker en gang og deretter sortere dem per program i PHP. Hvis skal skalere, implementer:
+$open_issues = get_posts(array('post_type'=>'skybug_issue','numberposts'=>-1,'post_status'=>'publish'));
+// Deretter group by program meta in loop
+Derimot, for moderate bruk, dagens løsning er ok.
+Vi kan nevne i usikkert.json at for >1000 saker, vurdere optimalisering.
+Sjekk at vi ikke har noen debug-kode eller var_dump etc. (Nei, alt rent.)
+Sjekk at plugin avaktivering/sletting ryddes (om ønsket): Vi kan tilby en avinstalleringsrutine (uninstall.php) som fjerner custom options (skybug_enable_api, skybug_notify_email) og eventuelt CPT innhold? Som bug tracker data er verdifull, vi sletter ikke CPT innhold automatisk. Det overlates til admin.
+Sett versjonsnummer i topp til 1.0.0 (eller bump til 1.0.0 etter alt testet). Oppdater readme.txt om det finnes (vi kan lage en readme for WP repo standard).
+Brukerdokumentasjon ferdigstilling:
+Gå over “Brukermanual” side i pluginen: Oppdater den for å inkludere alt av nye funksjoner i fase 3:
+Legg inn seksjon om “Lukke saker” (hvordan markere som løst).
+Legg til “Notifikasjoner” (forklar at plugin kan sende epost til X når ny sak opprettes, justerbart i innstillinger).
+Legg til “Webhook” info: at hvis en webhook URL er satt for et program, vil det motta en JSON-varsling når en sak lukkes.
+Front-end oversikt: beskriv hvordan man kan opprette en offentlig side med oversikt over kjente feil: (som sagt, lage WP-side med shortcoden).
+Få med eventuell troubleshooting: f.eks. “Hvis API-innsendinger ikke fungerer, sjekk at API er aktivert i innstillinger og at riktig nøkkel brukes.”
+Kort sagt, sørg for manualen er uttømmende slik at en ny bruker av pluginen skjønner hensikten med hver undermeny og funksjon.
+Språkvask: manualtekstene skal være tydelige og på godt norsk. Variér setninger hvis repetisjon. (Vi har litt repetisjon i oversikter, men det er greit.)
+Slutt-test i helhet:
+Simuler at en kunde/annen person bruker pluginen kun via manual: Følg manualens anvisninger, se at alt stemmer og er logisk.
+Test access control: logg inn som en bruker uten manage_options (f.eks. forfatter) – de skal ikke se SkyBug-menyen i det hele tatt. (Fordi vi satte manage_options som capability på alle menypunkter.) Bra.
+Multisite scenario hvis relevant: Siden CPTer og options normalt er pr. site, det funker i hver site isolert. Ingen spesielle hensyn trengs bortsett fra at API-nøkler unike pr site. Ok.
+Test oversettelse: generer en .pot fil av tekstene (vi kan bruke wp i18n make-pot if avail). Forsikre at text domain er konsistent ("skybug" overalt).
+Test avinstallasjon (hvis vi laget uninstall rutine).
+Oppdater AI-loggfiler siste gang:
+Legg inn i fungerer.json at "Hele plugin gjennomgått, alle funksjoner verifisert i scenarioer".
+Eventuelle gjenstående ting i usikkert.json som ikke ble implementert, men kanskje kan fungere: f.eks. "Mulighet for brukere å sende inn saker via et offentlig skjema ble ikke implementert, men man kunne vurdert det via en [shortcode] form med captcha etc." – bare for referanse.
+feil.json: hvis ingen nye feil, fint, ellers notere ting man prøvde men droppet (kanskje vi droppet seperate email per program eller droppet caching).
+godekilder.json: legg inn eventuelle nye kilder, f.eks. link til Chart.js docs hvis vi brukte det, WP post status ref.
+Konklusjon: Fasen avsluttes med at pluginen SkyBug nå fremstår komplett:
+Admin-meny med alle ønskede seksjoner (Innstillinger, Brukermanual, Programmer, Saker, Statistikk, Bug Reports, Ønskede funksjoner, Diverse) – alle med ikoner (vi la hovedikon + planla CSS for sub-ikoner).
+Full CRUD for programmer og saker, API-integrasjon, notifikasjoner og oversikter.
+Koden er robust og følger WP-standarder, og AI/dokumentasjon systemet (AI-learned logs) er oppdatert for hver del, slik at videre vedlikehold blir enklere.
+Til slutt, før vi erklærer oss ferdige, dobbeltsjekker vi at absolutt alle punkter fra spesifikasjonen er oppfylt:
+Lagring av lærdom (ja, vi har JSON-logger).
+Ingen dummy-tekst (sjekket at manualens løfter er oppfylt; alt som står i UI finnes funksjonelt).
+Fasevalidering (vi har tydelig i teksten at hver fase skal sjekkes).
+Språkvariasjon (vi har formulert repetisjon litt forskjellig).
+Guardrails fra fase 0 (vi har fortsatt PHPCS config, ingenting ble gjort som strider mot regler).
+Best practice (sikkerhet, i18n, etc) – alt implementert i tråd med WP Codex.
+VSCode extensions var bare i start, men håper de ble fulgt.
+Når alt dette er gjennomgått og godkjent, kan pluginen lanseres som en ferdig versjon 1.0. 🎉

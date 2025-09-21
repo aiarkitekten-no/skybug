@@ -1,0 +1,18 @@
+{
+  "phase": 12,
+  "version": "1.4.0",
+  "date": "2025-09-19",
+  "checks": {
+    "metrics_v2_cache_keys": ["skybug_metrics_cache_v2_b", "skybug_metrics_cache_v2_d"],
+    "details_param": true,
+    "fresh_param": true,
+    "by_type_present": true,
+    "top_programs_present": true,
+    "filters": ["skybug_metrics_cache_ttl", "skybug_metrics_top_programs_limit"],
+    "admin_flush_button": true,
+    "wp_cli_commands": ["skybug metrics", "skybug flush-metrics"],
+    "manual_extended": true,
+    "changelog_1_4_0": true
+  },
+  "notes": "Fase 12 utvider metrics til operasjonelt nivå med detaljer, konfigurerbare filtre, flush og CLI."
+}

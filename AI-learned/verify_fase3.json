@@ -1,0 +1,22 @@
+{
+  "fase": "3",
+  "status": "fullført",
+  "implementert": {
+    "post_status_skybug_closed": true,
+    "status_ui_submit_box": true,
+    "lagre_status": true,
+    "webhook_lukking": true,
+    "notify_email_option": true,
+    "epost_varsel_ny_sak": true
+  },
+  "testplan": [
+    "Opprette ny sak via API (aktivt program) -> publish -> epost sendes (hvis notify satt)",
+    "Endre status til Lukket -> webhook POST trigges (observer 200/feil)",
+    "Webhook URL tom -> ingen kall",
+    "API disabled program -> auth_failed eller api_disabled før opprettelse",
+    "Lukke allerede lukket sak -> ingen ekstra webhook"
+  ],
+  "avvik": [],
+  "neste": [],
+  "kommentar": "Manuell dokumentasjon oppdatert. Testplan definert. Ingen placeholders introdusert."
+}

@@ -1,0 +1,47 @@
+.skybug-single-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;margin-top:12px;align-items:start}
+@media (max-width:1200px){.skybug-single-layout{grid-template-columns:1fr}}
+.skybug-single-main{display:flex;flex-direction:column;gap:24px}
+.skybug-single-section{background:#fff;border:1px solid #e2e6ea;border-radius:10px;padding:18px;position:relative}
+.skybug-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.skybug-section-header h2{margin:0;font-size:16px;font-weight:600}
+.skybug-internal-comments{display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.skybug-comment{background:#f8f9fa;border:1px solid #e2e6ea;padding:10px 12px;border-radius:8px;font-size:13px}
+.skybug-comment-meta{font-size:11px;color:#6c757d;margin-bottom:4px}
+.skybug-comment-empty{font-size:12px;color:#6c757d}
+.skybug-comment-new textarea{width:100%;resize:vertical;border:1px solid #ced4da;border-radius:6px;padding:8px;font-size:13px;margin-bottom:6px}
+.skybug-single-side{display:flex;flex-direction:column;gap:18px}
+.skybug-side-card{background:#fff;border:1px solid #e2e6ea;border-radius:10px;padding:16px;font-size:13px;display:flex;flex-direction:column;gap:10px}
+.skybug-side-card h3{margin:0 0 4px;font-size:14px;font-weight:600}
+.skybug-status-buttons{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+.skybug-status-btn{border:0;background:#f1f3f5;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;line-height:1.2;text-align:center}
+.skybug-status-btn.active{background:#0d6efd;color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+#skybug_priority_inline,#skybug_type_inline{width:100%;margin-top:4px;border:1px solid #ced4da;border-radius:6px;padding:6px 8px;font-size:12px;background:#fff}
+.skybug-inline-program{font-size:12px;color:#495057}
+.skybug-last-activity{font-size:11px;color:#6c757d;margin-top:4px}
+.skybug-mini-hidden{display:none!important}
+/* Hide classic meta we duplicate */
+#side-sortables #skybug_ticket_info,#side-sortables #skybug_latest_email{display:none}
+/* Inline editor */
+.skybug-editor-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.skybug-editor-toolbar button{border:1px solid #ced4da;background:#f8f9fa;border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;line-height:1}
+.skybug-editor-toolbar button:hover{background:#e9ecef}
+.skybug-rich-editor{min-height:240px;border:1px solid #ced4da;border-radius:8px;padding:12px;font-size:14px;line-height:1.5;background:#fff;overflow:auto}
+.skybug-rich-editor:focus{outline:2px solid #0d6efd33}
+.skybug-rich-editor p{margin:0 0 10px}
+.skybug-rich-editor ul, .skybug-rich-editor ol{margin:0 0 12px 20px;padding:0}
+.skybug-rich-editor a{color:#0d6efd;text-decoration:none}
+.skybug-rich-editor a:hover{text-decoration:underline}
+/* Email panel */
+.skybug-email-card{gap:10px}
+.skybug-email-status{display:flex;align-items:center;gap:8px;font-size:11px;color:#6c757d}
+.skybug-email-thread{max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:8px;font-size:11px}
+.skybug-email-item{background:#f8f9fa;border:1px solid #e2e6ea;padding:6px 8px;border-radius:6px}
+.skybug-email-item .skybug-email-meta{font-weight:600;font-size:11px;margin-bottom:4px}
+.skybug-email-snippet{font-size:11px;color:#555}
+.skybug-email-reply{display:flex;flex-direction:column;gap:6px}
+#skybug-email-subject,#skybug-email-message{width:100%;border:1px solid #ced4da;border-radius:6px;padding:6px 8px;font-size:12px;background:#fff}
+#skybug-email-message{resize:vertical;min-height:90px}
+.skybug-email-feedback{font-size:11px}
+@media (prefers-color-scheme:dark){.skybug-editor-toolbar button{background:#2c3136;border-color:#30363d;color:#d2d8dd}.skybug-editor-toolbar button:hover{background:#343a40}.skybug-rich-editor{background:#1f2225;border-color:#30363d;color:#e2e6ea}.skybug-email-item{background:#25292d;border-color:#30363d}.skybug-email-snippet{color:#9aa0a6}#skybug-email-subject,#skybug-email-message{background:#1f2225;border-color:#30363d;color:#d2d8dd}}
+/* Dark mode */
+@media (prefers-color-scheme:dark){.skybug-single-section,.skybug-side-card{background:#1f2225;border-color:#30363d}.skybug-comment{background:#25292d;border-color:#30363d}.skybug-status-btn{background:#2c3136;color:#d2d8dd}.skybug-status-btn.active{background:#0d6efd}.skybug-comment-meta{color:#9aa0a6}.skybug-last-activity{color:#9aa0a6}#skybug_priority_inline,#skybug_type_inline{background:#1f2225;border-color:#30363d;color:#d2d8dd}.skybug-comment-new textarea{background:#1f2225;color:#e2e6ea;border-color:#30363d}}

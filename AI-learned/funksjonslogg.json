@@ -1,0 +1,258 @@
+[
+    {
+        "id": "a1b2c3d4",
+        "navn": "Last text domain for oversettelser",
+        "beskrivelse": "Laster WordPress text domain for skybug plugin slik at alle oversettelser fungerer korrekt",
+        "avhengigheter": "WordPress plugins_loaded hook, languages/ katalog",
+        "logikk": "Bruker load_plugin_textdomain med 'skybug' som text domain og peker til /languages mappen",
+        "endringsvarsel": "Hvis plugin navn eller text domain endres, må denne funksjonen oppdateres"
+    },
+    {
+        "id": "1a2b3c4d", 
+        "navn": "Registrer Custom Post Types og Taxonomier",
+        "beskrivelse": "Registrerer skybug_program og skybug_issue post typer samt skybug_type taksonomi. Oppretter også standard terms (Bug/Ønsket funksjon)",
+        "avhengigheter": "WordPress init hook, WP register_post_type og register_taxonomy funksjoner",
+        "logikk": "CPT har show_in_menu=false fordi vi håndterer meny manuelt. Taksonomi knyttes til skybug_issue. Standard terms opprettes hvis de ikke finnes",
+        "endringsvarsel": "Ved endring av CPT struktur må meny callbacks og REST API oppdateres"
+    },
+    {
+        "id": "2b3c4d5e",
+        "navn": "Registrer adminmeny", 
+        "beskrivelse": "Oppretter SkyBug hovedmeny med posisjon 1 (høyeste prioritet) og alle undermenyer",
+        "avhengigheter": "WordPress admin_menu hook, alle render callback funksjoner",
+        "logikk": "Hovedmeny bruker dashicons-admin-tools ikon og posisjon 1. Undermenyer peker til CPT lister eller egne callbacks",
+        "endringsvarsel": "Ved nye sider eller endret navigasjon må denne funksjonen oppdateres"
+    },
+    {
+        "id": "3c4d5e6f",
+        "navn": "Render SkyBug Dashboard side",
+        "beskrivelse": "Genererer HTML for hovedsiden med velkomstmelding og navigasjonshjelp", 
+        "avhengigheter": "Kun oversatte strenger via __() funksjonen",
+        "logikk": "Enkel statisk side med wrap div og oversatt tekst. Kan utvides med dynamisk innhold senere",
+        "endringsvarsel": "Hvis dashboard skal vise statistikk eller snarveier, utvid denne funksjonen"
+    },
+    {
+        "id": "4d5e6f7g",
+        "navn": "Render Bug Reports side",
+        "beskrivelse": "Viser filtrerte liste over alle saker med type 'bug' i tabellformat med program tilknytning",
+        "avhengigheter": "skybug_issue CPT, skybug_type taksonomi, _skybug_program_id meta",
+        "logikk": "Bruker tax_query for å filtrere kun bugs, viser tabell med tittel-link til edit, programnavn og dato",
+        "endringsvarsel": "Ved endring av CPT struktur, meta felter eller taksonomi må query og visning oppdateres"
+    },
+    {
+        "id": "5e6f7g8h",
+        "navn": "Render Features side",
+        "beskrivelse": "Viser filtrerte liste over saker med type 'feature' i tabellformat",
+        "avhengigheter": "Samme som bug reports men filtrerer på 'feature' term",
+        "logikk": "Identisk logikk som bug reports men med feature filter og tilpasset tekst",
+        "endringsvarsel": "Ved endring av datamodell må denne synkroniseres med bug reports siden"
+    },
+    {
+        "id": "6f7g8h9i",
+        "navn": "Render Statistikk side",
+        "beskrivelse": "Samler og viser statistikk over programmer, totale saker, bugs og features",
+        "avhengigheter": "wp_count_posts funksjon, get_posts for telling av terms",
+        "logikk": "Bruker wp_count_posts for basis telling og get_posts med tax_query for spesifikk type telling",
+        "endringsvarsel": "Ved nye post typer eller kategorier må tellelogikken utvides"
+    },
+    {
+        "id": "7g8h9i0j",
+    "navn": "Render Innstillinger side", 
+    "beskrivelse": "Foreløpig enkel side uten innstillinger (kan utvides)",
+        "avhengigheter": "Kun oversettelse",
+        "logikk": "Statisk melding som informerer om at innstillinger kommer senere",
+        "endringsvarsel": "Erstatt med faktiske innstillinger når de implementeres"
+    },
+    {
+        "id": "8h9i0j1k",
+        "navn": "Render Brukermanual side",
+        "beskrivelse": "Omfattende brukerveiledning med info om alle funksjoner inkludert API bruk",
+        "avhengigheter": "Oversettelse og faktiske plugin funksjoner",
+        "logikk": "Statisk HTML med oversatt tekst som forklarer alle plugin funksjoner",
+        "endringsvarsel": "Oppdater når nye funksjoner legges til plugin"
+    },
+    {
+        "id": "9i0j1k2l",
+        "navn": "Render Diverse side",
+        "beskrivelse": "Generisk side for diverse verktøy og informasjon",
+        "avhengigheter": "Kun oversettelse",
+    "logikk": "Statisk seksjon som kan utvides med diverse verktøy senere",
+        "endringsvarsel": "Utvid når spesifikke diverse funksjoner defineres"
+    },
+    {
+        "id": "d4c3b2a1",
+        "navn": "Legg til meta-bokser for Program",
+        "beskrivelse": "Registrerer API-integrasjon meta boks for Program post type",
+        "avhengigheter": "WordPress add_meta_boxes hook, skybug_program CPT",
+        "logikk": "Legger til meta boks med høy prioritet for API nøkkel og webhook innstillinger",
+        "endringsvarsel": "Ved nye meta felter må denne funksjonen utvides"
+    },
+    {
+        "id": "1122aabb",
+        "navn": "Render Program API metabox",
+        "beskrivelse": "Viser API nøkkel (readonly), endpoint URL og webhook input felt",
+        "avhengigheter": "get_post_meta, home_url, wp_nonce_field",
+        "logikk": "Henter eksisterende meta, viser nøkkel hvis finnes eller info om at den opprettes ved lagring",
+        "endringsvarsel": "Ved endring av API endpoint structure må URL generering oppdateres"
+    },
+    {
+        "id": "bbcceeff",
+        "navn": "Lagre Program meta",
+        "beskrivelse": "Håndterer lagring av webhook URL og automatisk generering av API nøkkel",
+        "avhengigheter": "WordPress save_post hook, wp_verify_nonce, random_bytes",
+        "logikk": "Validerer nonce og rettigheter, lagrer webhook, genererer 32-char hex API nøkkel hvis ikke finnes",
+        "endringsvarsel": "Ved endring av sikkerhetskrav må nonce og validering oppdateres"
+    },
+    {
+        "id": "aabbccdd",
+        "navn": "Registrer REST API-ruter",
+        "beskrivelse": "Oppretter /wp-json/skybug/v1/report POST endpoint for eksterne bug reports",
+        "avhengigheter": "WordPress REST API system",
+        "logikk": "Registrerer POST route med egen permission callback som tillater all trafikk (auth gjøres i callback)",
+        "endringsvarsel": "Ved nye API endpoints eller auth endringer må denne utvides"
+    },
+    {
+        "id": "ddccbbaa",
+        "navn": "REST API callback motta bugrapport",
+        "beskrivelse": "Hovedlogikk for å motta og prosessere eksterne bug/feature requests via API",
+        "avhengigheter": "API nøkkel validering, CPT opprettelse, meta lagring, taksonomi setting",
+        "logikk": "Validerer input, autentiserer via API nøkkel, finner program, oppretter sak med riktig type og tilknytning",
+        "endringsvarsel": "Ved endring av datamodell, auth system eller API kontrakt må denne funksjonen oppdateres"
+    },
+    {
+        "id": "e1f2g3h4",
+        "navn": "Admin notice ved API-nøkkel generering",
+        "beskrivelse": "Viser engangs admin notice etter generering av API nøkkel for program",
+        "avhengigheter": "redirect_post_location filter, admin_notices hook",
+        "logikk": "Sjekker query arg skybug_key_generated og viser grønn notice",
+        "endringsvarsel": "Endre tekst dersom nøkkelgenereringsflyt endres"
+    },
+    {
+        "id": "f1a2b3c4",
+        "navn": "Definer kolonner skybug_issue",
+        "beskrivelse": "Legger til custom kolonner Program og Type i issues admin tabell",
+        "avhengigheter": "manage_skybug_issue_posts_columns filter",
+        "logikk": "Utvider kolonner array med to nye nøkler",
+        "endringsvarsel": "Hvis kolonnenavn endres må oversettelser og visningslogikk oppdateres"
+    },
+    {
+        "id": "g2b3c4d5",
+        "navn": "Render kolonneinnhold skybug_issue",
+        "beskrivelse": "Fyller celler for Program og Type kolonner i issue listen",
+        "avhengigheter": "manage_skybug_issue_posts_custom_column action, post meta, wp_get_post_terms",
+        "logikk": "Henter program tittel via meta og første term navn for type",
+        "endringsvarsel": "Hvis meta nøkkel eller taksonomi endres må denne oppdateres"
+    },
+    {
+        "id": "h3c4d5e6",
+        "navn": "Definer kolonner skybug_program",
+        "beskrivelse": "Legger til kolonner API-nøkkel (forkortet) og Webhook i program listen",
+        "avhengigheter": "manage_skybug_program_posts_columns filter",
+        "logikk": "Utvider kolonner array med to nye nøkler",
+        "endringsvarsel": "Ved endring av sikkerhetsstrategi (maskering) må output oppdateres"
+    },
+    {
+        "id": "i4d5e6f7",
+        "navn": "Render kolonneinnhold skybug_program",
+        "beskrivelse": "Viser forkortet API nøkkel og lenke til webhook ved eksisterende data",
+        "avhengigheter": "manage_skybug_program_posts_custom_column action, post meta",
+    "logikk": "Trimmer API nøkkel til 8 tegn og viser melding hvis tom",
+        "endringsvarsel": "Endre trim-lengde eller sikkerhetsmaskering ved ny policy"
+    }
+    ,{
+        "id": "j1k2l3m4",
+        "navn": "Finn program etter API nøkkel",
+        "beskrivelse": "Oppslagshjelper som returnerer første program post med gitt API nøkkel eller null",
+        "avhengigheter": "get_posts, meta query på _skybug_api_key",
+        "logikk": "Filtrerer på post type skybug_program med meta_query og begrenser til 1 resultat",
+        "endringsvarsel": "Optimaliser med WP_Query args eller caching hvis volum øker"
+    }
+    ,{
+        "id": "k2l3m4n5",
+        "navn": "Registrer custom post status skybug_closed",
+        "beskrivelse": "Oppretter post status for lukkede saker synlig i admin lister",
+        "avhengigheter": "register_post_status",
+        "logikk": "Definerer label, label_count og sikrer visning i admin status-listen",
+        "endringsvarsel": "Hvis status skal være offentlig må public flag justeres"
+    }
+    ,{
+        "id": "l3m4n5o6",
+        "navn": "Status UI i submit box",
+        "beskrivelse": "Legger nedtrekk for Åpen/Lukket i publish meta-boksen for skybug_issue",
+        "avhengigheter": "post_submitbox_misc_actions hook, global $post",
+        "logikk": "Rendrer select med to alternativer og forvalgt nåværende status",
+        "endringsvarsel": "Utvid ved flere statusverdier"
+    }
+    ,{
+        "id": "m4n5o6p7",
+        "navn": "Lagre status fra UI",
+        "beskrivelse": "Håndterer overgang til valgt status og oppdaterer post",
+        "avhengigheter": "save_post_skybug_issue, wp_update_post",
+        "logikk": "Validerer input og oppdaterer post_status hvis endret",
+        "endringsvarsel": "Legg til flere valideringer ved utvidet workflow"
+    }
+    ,{
+        "id": "n5o6p7q8",
+        "navn": "Webhook dispatch ved lukking",
+        "beskrivelse": "Sender POST til konfigurert program-webhook når en sak lukkes",
+        "avhengigheter": "transition_post_status, get_post_meta, wp_remote_post",
+        "logikk": "Filtrerer på skybug_issue og ny status skybug_closed og sender JSON payload",
+        "endringsvarsel": "Legg til retry/logging mekanisme ved behov"
+    }
+    ,{
+        "id": "o6p7q8r9",
+        "navn": "Registrer notify email setting",
+        "beskrivelse": "Registrerer innstillingsfelt for epost-varsling ved nye saker",
+        "avhengigheter": "register_setting, add_settings_field",
+        "logikk": "Legger til settings section og email-felt under egen settings page",
+        "endringsvarsel": "Utvid til flere mottakere eller separate typer varslinger"
+    }
+    ,{
+        "id": "p7q8r9s1",
+        "navn": "Utvidet innstillinger side",
+        "beskrivelse": "Viser settings form for registrerte SkyBug alternativer",
+        "avhengigheter": "settings_fields, do_settings_sections",
+        "logikk": "Renderer form med submit button",
+        "endringsvarsel": "Legg til flere seksjoner ved nye alternativer"
+    }
+    ,{
+        "id": "q8r9s1t2",
+        "navn": "Send epost ved ny sak",
+        "beskrivelse": "Sender epost til konfigurert adresse når ny sak publiseres",
+        "avhengigheter": "publish_skybug_issue, get_option, wp_mail",
+        "logikk": "Konstruerer emne og body med program info og admin edit URL",
+        "endringsvarsel": "Legg til HTML-format eller flere mottakere senere"
+    }
+    ,{
+        "id": "r1s2t3u4",
+        "navn": "Meta-boks programvalg på sak",
+        "beskrivelse": "Lar redaktør knytte en sak til et program via dropdown",
+        "avhengigheter": "add_meta_boxes, get_posts",
+        "logikk": "Lister alle programmer og markerer valgt; lagrer via separat save hook",
+        "endringsvarsel": "Optimaliser henting ved stort volum (paginering eller søk)"
+    }
+    ,{
+        "id": "s2t3u4v5",
+        "navn": "Lagre programtilknytning for sak",
+        "beskrivelse": "Persistens av valgt program i meta _skybug_program_id",
+        "avhengigheter": "save_post_skybug_issue, update_post_meta",
+        "logikk": "Validerer nonce og oppdaterer eller sletter meta basert på input",
+        "endringsvarsel": "Legg inn validering av gyldig program-ID ved behov"
+    }
+    ,{
+        "id": "t3u4v5w6",
+        "navn": "Shortcode skybug-dashboard",
+        "beskrivelse": "Viser åpne saker per program (utelater lukkede)",
+        "avhengigheter": "add_shortcode, get_posts, wp_get_post_terms",
+        "logikk": "Looper programmer, henter saker og filtrerer bort status skybug_closed, bygger HTML-liste",
+        "endringsvarsel": "Legg til caching eller paginering ved stort datavolum"
+    }
+    ,{
+        "id": "6f7g8h9i",
+        "navn": "Render Statistikk side (utvidet)",
+        "beskrivelse": "Utvidet med telling av åpne/lukkede pr kategori og enkel graf (SimplePie)",
+        "avhengigheter": "wp_count_posts, get_posts, SimplePie (lokal)",
+        "logikk": "Henter counts for programmer, åpne bugs/features, lukkede saker og renderer tabell + pie graf",
+        "endringsvarsel": "Bytt til full Chart.js eller lazy loading ved større behov"
+    }
+]

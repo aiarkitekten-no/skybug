@@ -1,0 +1,23 @@
+.skybug-full-width{width:100%}
+.skybug-help-small{display:block;color:#666;margin-top:4px;font-size:11px}
+.skybug-box-muted{background:#f9f9f9;padding:10px;border-radius:4px;margin-top:10px}
+.skybug-last-activity{color:#666;font-size:12px;margin-top:15px}
+.skybug-add-comment{margin-bottom:20px}
+.skybug-add-comment textarea{width:100%}
+.skybug-comment{background:#f9f9f9;padding:10px;margin-bottom:10px;border-radius:4px;border-left:4px solid #007cba}
+.skybug-comment-meta{font-size:12px;color:#666;margin-bottom:5px}
+.skybug-comment-empty{color:#666;font-style:italic}
+.skybug-email-form{background:#f9f9f9;padding:15px;border-radius:4px}
+.skybug-email-form h4{margin-top:0}
+.skybug-email-readonly{width:100%;background:#f0f0f0}
+.skybug-email-full{width:100%}
+.skybug-email-empty-msg{color:#666;font-style:italic}
+.skybug-warning-box{background:#fff3cd;padding:10px;border-radius:4px;border-left:4px solid #ffc107}
+.skybug-center-block{text-align:center;margin-bottom:15px}
+.skybug-imap-green{color:#28a745;font-size:24px}
+.skybug-imap-yellow{color:#ffc107;font-size:24px}
+.skybug-imap-red{color:#dc3545;font-size:24px}
+.skybug-imap-status-green{margin:5px 0;font-weight:700;color:#28a745}
+.skybug-imap-status-yellow{margin:5px 0;font-weight:700;color:#ffc107}
+.skybug-imap-status-red{margin:5px 0;font-weight:700;color:#dc3545}
+.skybug-center-block small{color:#666}

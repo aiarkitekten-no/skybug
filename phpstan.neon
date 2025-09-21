@@ -1,0 +1,9 @@
+parameters:
+  level: 5
+  paths:
+    - skybug.php
+  tmpDir: .phpstan
+  checkMissingIterableValueType: true
+  reportUnmatchedIgnoredErrors: true
+  memoryLimit: 512M
+  inferPrivatePropertyTypeFromConstructor: true

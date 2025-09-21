@@ -1,0 +1,19 @@
+{
+  "fase": "4",
+  "status": "fullført",
+  "implementert": {
+    "meta_boks_programvalg": true,
+    "lagring_programvalg": true,
+    "shortcode_skybug_dashboard": true,
+    "filtrering_lukkede_ut": true
+  },
+  "testscenarier": [
+    "Sak uten program viser (Ingen program) i admin kolonne",
+    "Valg av program lagres og vises i liste",
+    "Shortcode output skjuler lukkede saker",
+    "Shortcode viser alle programmer selv uten åpne saker (viser melding)",
+    "Sak flyttes til Lukket og forsvinner fra shortcode"
+  ],
+  "avvik": [],
+  "kommentar": "Shortcode implementerer enkel filtrering og utelukker status skybug_closed. Ingen placeholders introdusert."
+}

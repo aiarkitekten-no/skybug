@@ -1,0 +1,44 @@
+[
+    {
+        "kategori": "Plugin Header",
+        "beskrivelse": "Plugin URI skal peke til reell dokumentasjon eller utelates",
+        "problem": "Ugyldig eller midlertidig URI gir uklar kildehenvisning",
+        "løsning": "Sett endelig dokumentasjonslenke når docs foreligger ellers fjern feltet midlertidig",
+        "testet": "Feltet vurderes til fjerning inntil stabil dokumentasjonslenke er etablert"
+    },
+    {
+        "kategori": "Menu Position",
+        "beskrivelse": "Noen WordPress konfigurasjoner kan ignorere lave menu posisjoner",
+        "problem": "I enkelte setups kan posisjon 1 ikke garantere øverste plassering",
+        "løsning": "Bruk desimal som 0.1 eller test med 0 hvis 1 ikke fungerer",
+        "testet": "Posisjon 1 fungerte i test miljøet"
+    },
+    {
+        "kategori": "Text Domain Loading",
+        "beskrivelse": "load_plugin_textdomain må kalles på riktig hook tidspunkt",
+        "problem": "Hvis kalt for tidlig eller sent kan oversettelser feile",
+        "løsning": "Bruk plugins_loaded hook som er standard for text domain loading",
+        "testet": "plugins_loaded hook fungerte korrekt"
+    },
+    {
+        "kategori": "API Endpoint Security",
+        "beskrivelse": "REST endpoint med __return_true permission kan være for åpen",
+        "problem": "Selv med custom auth i callback kan åpen permission skape sikkerhetshull",
+        "løsning": "Vi kontrollerer auth manuelt i callback som er hensikten med API nøkler",
+        "testet": "API fungerer med vår custom API nøkkel auth"
+    },
+    {
+        "kategori": "Rate Limiting Mangler",
+        "beskrivelse": "Ingen begrensning på antall API kall per nøkkel per tidsintervall",
+        "problem": "Kan tillate brute force eller spam dersom nøkkel lekker",
+        "løsning": "Implementere transient-baserte tellere eller ekstern gateway i senere fase",
+        "testet": "Ikke implementert ennå"
+    },
+    {
+        "kategori": "REST Callback Struktur",
+        "beskrivelse": "Flere return statements i API callback kan komplisere utvidelser",
+        "problem": "Gir mindre sentralisert feilhåndtering og logging",
+        "løsning": "Refaktor til tidlig valideringsblokk og samlet response build i senere fase",
+        "testet": "Bevisst valgt midlertidig for klarhet nå"
+    }
+]

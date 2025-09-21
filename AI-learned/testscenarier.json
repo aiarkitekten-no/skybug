@@ -1,0 +1,124 @@
+[
+    {
+        "test_scenario": "Plugin Aktivering",
+        "beskrivelse": "Test at plugin kan aktiveres og menyer vises korrekt",
+        "steg": [
+            "1. Gå til WordPress Admin > Plugins",
+            "2. Finn SkyBug plugin og klikk Activate", 
+            "3. Verifiser at 'SkyBug' meny vises øverst i admin sidebar",
+            "4. Sjekk at alle undermenyer er tilstede og klikkbare"
+        ],
+        "forventet_resultat": "Plugin aktiveres uten feil og meny struktur er komplett",
+        "status": "Må testes"
+    },
+    {
+        "test_scenario": "Program Opprettelse",
+        "beskrivelse": "Test opprettelse av nytt program med API nøkkel generering",
+        "steg": [
+            "1. Gå til SkyBug > Programmer",
+            "2. Klikk 'Legg til nytt program'",
+            "3. Fyll inn Program navn og beskrivelse",
+            "4. Lagre programmet",
+            "5. Sjekk at API nøkkel genereres automatisk",
+            "6. Verifiser at endpoint URL vises korrekt"
+        ],
+        "forventet_resultat": "Program lagres med unik API nøkkel og korrekt endpoint info",
+        "status": "Må testes"
+    },
+    {
+        "test_scenario": "API Bug Report",
+        "beskrivelse": "Test ekstern bug rapportering via REST API",
+        "steg": [
+            "1. Opprett et test program og noter API nøkkel",
+            "2. Send POST til /wp-json/skybug/v1/report med:",
+            "   - api_key: [program API nøkkel]",
+            "   - title: 'Test Bug via API'", 
+            "   - description: 'Dette er en test bug'",
+            "   - type: 'bug'",
+            "3. Verifiser 200 respons med issue_id",
+            "4. Sjekk at sak vises i Bug Reports siden",
+            "5. Verifiser program kobling i admin"
+        ],
+        "forventet_resultat": "Bug rapport opprettes korrekt koblet til riktig program",
+        "status": "Må testes"
+    },
+    {
+        "test_scenario": "Statistikk Visning",
+        "beskrivelse": "Test at statistikk siden viser korrekte tall",
+        "steg": [
+            "1. Opprett 2 programmer",
+            "2. Opprett 3 bugs og 2 feature requests", 
+            "3. Gå til SkyBug > Statistikk",
+            "4. Verifiser at tellerne matcher:",
+            "   - Programmer: 2",
+            "   - Saker: 5", 
+            "   - Bugs: 3",
+            "   - Features: 2"
+        ],
+        "forventet_resultat": "Alle statistikk tall er nøyaktige og oppdaterte",
+        "status": "Må testes"
+    },
+    {
+        "test_scenario": "Sikkerhet Test",
+        "beskrivelse": "Test API sikkerhet med ugyldig nøkkel",
+        "steg": [
+            "1. Send API request med feil api_key",
+            "2. Send request med manglende required fields",
+            "3. Verifiser 403 feil for ugyldig nøkkel",
+            "4. Verifiser 400 feil for manglende felt"
+        ],
+        "forventet_resultat": "API returnerer riktige feilkoder og nekter uautorisert tilgang",
+        "status": "Må testes"
+    },
+    {
+        "test_scenario": "Webhook Ved Lukking",
+        "beskrivelse": "Verifiser at webhook kalles når sak lukkes",
+        "steg": [
+            "1. Sett webhook URL på et program (pek til test-endepunkt som logger payload)",
+            "2. Opprett sak knyttet til program",
+            "3. Endre status til Lukket",
+            "4. Verifiser at test-endepunkt mottar event=issue_closed med korrekt JSON",
+            "5. Lukk samme sak igjen (ingen ekstra kall)"
+        ],
+        "forventet_resultat": "Akkurat ett webhook-kall med korrekt innhold",
+        "status": "Må testes"
+    },
+    {
+        "test_scenario": "Epost Varsel Ny Sak",
+        "beskrivelse": "Verifiser at epost sendes når notify email satt",
+        "steg": [
+            "1. Sett notify email i Innstillinger",
+            "2. Opprett ny sak via API",
+            "3. Sjekk innboks for emne 'Ny sak:'",
+            "4. Tøm notify email felt og opprett ny sak",
+            "5. Bekreft at ingen epost sendes"
+        ],
+        "forventet_resultat": "Kun første opprettelse genererer epost",
+        "status": "Må testes"
+    },
+    {
+        "test_scenario": "Shortcode Åpne Saker",
+        "beskrivelse": "Shortcode skjuler lukkede saker",
+        "steg": [
+            "1. Opprett program + to saker (bug/feature)",
+            "2. Sett inn [skybug-dashboard] på en side",
+            "3. Lukk en sak",
+            "4. Last siden og verifiser at kun åpne sak vises"
+        ],
+        "forventet_resultat": "Lukket sak fjernet fra liste",
+        "status": "Må testes"
+    },
+    {
+        "test_scenario": "Graf Tall Konsistens",
+        "beskrivelse": "Graf viser samme tall som tabell",
+        "steg": [
+            "1. Tell åpne bugs/features og lukkede manuelt",
+            "2. Åpne Statistikk siden",
+            "3. Inspiser data objekt i script (browser devtools)",
+            "4. Sammenlign tall med tabell",
+            "5. Lukk en sak og oppdater, verifiser endring"
+        ],
+        "forventet_resultat": "Data array matcher tabell hver gang",
+        "status": "Må testes"
+    }
+]

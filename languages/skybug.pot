@@ -1,0 +1,300 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: SkyBug 1.0.0\n"
+"POT-Creation-Date: 2025-09-19 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: manual-extract\n"
+
+#: skybug.php
+msgid "Programmer"
+msgstr ""
+
+msgid "Program"
+msgstr ""
+
+msgid "Legg til nytt program"
+msgstr ""
+
+msgid "Rediger program"
+msgstr ""
+
+msgid "Saker"
+msgstr ""
+
+msgid "Sak"
+msgstr ""
+
+msgid "Ny sak"
+msgstr ""
+
+msgid "Rediger sak"
+msgstr ""
+
+msgid "Sakstype"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Bug"
+msgstr ""
+
+msgid "Ønsket funksjon"
+msgstr ""
+
+msgid "Lukket"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Åpen"
+msgstr ""
+
+msgid "Varslinger"
+msgstr ""
+
+msgid "Konfigurer epost for varsling ved nye saker."
+msgstr ""
+
+msgid "Varslings-epost"
+msgstr ""
+
+msgid "Hvis tomt sendes ingen epostvarsler."
+msgstr ""
+
+msgid "Ny sak: %s"
+msgstr ""
+
+msgid "(Ukjent program)"
+msgstr ""
+
+msgid "En ny sak ble registrert for program \"%1$s\". Tittel: %2$s"
+msgstr ""
+
+msgid "SkyBug Dashboard"
+msgstr ""
+
+msgid "SkyBug"
+msgstr ""
+
+msgid "Alle saker"
+msgstr ""
+
+msgid "Feilrapporter"
+msgstr ""
+
+msgid "Ønskede funksjoner"
+msgstr ""
+
+msgid "Statistikk"
+msgstr ""
+
+msgid "Innstillinger"
+msgstr ""
+
+msgid "Brukermanual"
+msgstr ""
+
+msgid "Diverse"
+msgstr ""
+
+msgid "SkyBug Oversikt"
+msgstr ""
+
+msgid "Velkommen til SkyBug dashboard. Bruk menyen til venstre for å navigere til de ulike seksjonene."
+msgstr ""
+
+msgid "Ingen bug-rapporter registrert."
+msgstr ""
+
+msgid "Tittel"
+msgstr ""
+
+msgid "Program"
+msgstr ""
+
+msgid "Dato"
+msgstr ""
+
+msgid "Ingen registrerte ønsker."
+msgstr ""
+
+msgid "Ønsket funksjon"
+msgstr ""
+
+msgid "Metrikk"
+msgstr ""
+
+msgid "Antall"
+msgstr ""
+
+msgid "Åpne saker totalt"
+msgstr ""
+
+msgid "Åpne bugs"
+msgstr ""
+
+msgid "Åpne ønskede funksjoner"
+msgstr ""
+
+msgid "Lukkede saker"
+msgstr ""
+
+msgid "Fordeling"
+msgstr ""
+
+msgid "Nettleseren din støtter ikke canvas."
+msgstr ""
+
+msgid "Aktiver JavaScript for å se diagrammet."
+msgstr ""
+
+msgid "Lagre"
+msgstr ""
+
+msgid "Brukermanual – SkyBug"
+msgstr ""
+
+msgid "SkyBug-pluginen lar deg holde oversikt over feil og ønskede nye funksjoner for dine programmer."
+msgstr ""
+
+msgid "Du kan registrere"
+msgstr ""
+
+msgid "i fanen Programmer – hvert program representerer et system/produkt du vil spore saker for."
+msgstr ""
+
+msgid "Under"
+msgstr ""
+
+msgid "kan du se alle innrapporterte saker. Bruk undermenyene"
+msgstr ""
+
+msgid "og"
+msgstr ""
+
+msgid "for å filtrere etter type."
+msgstr ""
+
+msgid "siden viser deg nøkkeltall om registrerte programmer og saker."
+msgstr ""
+
+msgid "For oppsett, gå til"
+msgstr ""
+
+msgid "Denne brukermanualen vil oppdateres etterhvert som nye funksjoner legges til."
+msgstr ""
+
+msgid "API-integrasjon"
+msgstr ""
+
+msgid "Hvert program får en unik API-nøkkel. Utviklere kan sende en HTTP POST forespørsel til"
+msgstr ""
+
+msgid "for å registrere en ny sak. Inkluder feltene"
+msgstr ""
+
+msgid "i JSON-body. Hvis nøkkelen er gyldig, opprettes saken automatisk i SkyBug."
+msgstr ""
+
+msgid "Aktivering / Deaktivering"
+msgstr ""
+
+msgid "Du kan når som helst deaktivere API for et enkelt program via avkrysningsboksen \"Aktiver API\" i meta-boksen. Når API er deaktivert vil eksterne kall med korrekt nøkkel få feilkode 403 (api_disabled). Nøkkelen beholdes og kan aktiveres igjen uten regenerering."
+msgstr ""
+
+msgid "Statusworkflow"
+msgstr ""
+
+msgid "Saker kan være Åpen eller Lukket. Du endrer dette i publiseringsboksen via nedtrekkslisten Status. Lukking trigger webhook hvis konfigurert."
+msgstr ""
+
+msgid "Webhook ved lukking"
+msgstr ""
+
+msgid "Når en sak går til Lukket sender systemet et JSON-kall til programets Webhook URL dersom satt. Payload inkluderer event=issue_closed, issue_id, issue_title, program_id og timestamp."
+msgstr ""
+
+msgid "Epostvarsling"
+msgstr ""
+
+msgid "Sett en epostadresse under Innstillinger → Varslinger for å få varsel når en ny sak opprettes. Tom verdi betyr at det ikke sendes epost."
+msgstr ""
+
+msgid "Diverse"
+msgstr ""
+
+msgid "Denne seksjonen kan inneholde diverse informasjon eller verktøy."
+msgstr ""
+
+msgid "API-Integrasjon"
+msgstr ""
+
+msgid "Ingen API-nøkkel generert enda. En nøkkel vil bli opprettet når du lagrer programmet."
+msgstr ""
+
+msgid "API-nøkkel:"
+msgstr ""
+
+msgid "Denne nøkkelen brukes for å godkjenne API-tilkoblinger for dette programmet."
+msgstr ""
+
+msgid "Endpoint for bug-API:"
+msgstr ""
+
+msgid "(Valgfritt) URL som får en webhook varsling ved statusendringer."
+msgstr ""
+
+msgid "Aktiver API for dette programmet"
+msgstr ""
+
+msgid "Skru av for midlertidig å blokkere nye saker via eksternt API. Eksisterende nøkkel beholdes men valideres ikke."
+msgstr ""
+
+msgid "En API-nøkkel ble opprettet for dette programmet."
+msgstr ""
+
+msgid "Mangler felt: api_key, title, description, type må alle være satt"
+msgstr ""
+
+msgid "Ugyldig API-nøkkel"
+msgstr ""
+
+msgid "API er deaktivert for dette programmet"
+msgstr ""
+
+msgid "Kunne ikke opprette sak"
+msgstr ""
+
+msgid "(Program slettet)"
+msgstr ""
+
+msgid "(Ingen program)"
+msgstr ""
+
+msgid "API-nøkkel"
+msgstr ""
+
+msgid "Webhook"
+msgstr ""
+
+msgid "(Ingen nøkkel)"
+msgstr ""
+
+msgid "Programtilknytning"
+msgstr ""
+
+msgid "Velg program"
+msgstr ""
+
+msgid "(Ingen)"
+msgstr ""
+
+msgid "Ingen programmer tilgjengelig."
+msgstr ""
+
+msgid "Ingen åpne saker."
+msgstr ""

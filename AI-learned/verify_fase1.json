@@ -1,0 +1,49 @@
+{
+  "fase": "1",
+  "status": "fullført",
+  "sjekkpunkter": {
+    "cpt_program_args": {
+      "public": false,
+      "show_ui": true,
+      "show_in_menu": false,
+      "supports": ["title","editor"],
+      "map_meta_cap": true,
+      "capability_type": "post"
+    },
+    "cpt_issue_args": {
+      "public": false,
+      "show_ui": true,
+      "show_in_menu": false,
+      "supports": ["title","editor","comments"],
+      "map_meta_cap": true,
+      "capability_type": "post"
+    },
+    "taxonomy": {
+      "navn": "skybug_type",
+      "public": false,
+      "show_ui": true,
+      "hierarchical": false,
+      "standard_termer": ["bug","feature"],
+      "auto_opprettet": true
+    },
+    "meny": {
+      "hovedmeny_slug": "skybug_dashboard",
+      "posisjon": 1,
+      "norske_betegnelser": true,
+      "erstattet_bug_reports_med_feilrapporter": true
+    },
+    "i18n": {
+      "text_domain": "skybug",
+      "alle_synlige_strenger_wrappet": true,
+      "webhook_lenke_oversatt": true
+    },
+    "placeholders_fjernet": true,
+    "funksjons_id_konsistens": true,
+    "lint_avvik_vurdering": {
+      "camelCase_krav_linter": "Ignorert – følger WordPress snake_case standard",
+      "dupliserte_betegnelser": "Akseptert for i18n klarhet; ev. konsolidering vurderes senere i QA fase"
+    }
+  },
+  "konklusjon": "Struktur og CPT revisjon i henhold til Fase 1 krav er gjennomført uten rester av midlertidige markørtekster. I18n og menyoppsett validert.",
+  "anbefalt_videre": "Start Fase 2: Program meta UI forbedringer og API enable/disable option."
+}

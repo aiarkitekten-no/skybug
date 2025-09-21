@@ -1,0 +1,18 @@
+{
+  "fase": "2",
+  "status": "fullført",
+  "implementert": {
+    "api_toggle_meta": true,
+    "helper_program_lookup": true,
+    "api_callback_disable_sjekk": true
+  },
+  "gjenstår": [],
+  "testscenarier": [
+    "Gyldig nøkkel + aktivert API -> 201 suksess",
+    "Gyldig nøkkel + deaktivert API -> 403 api_disabled",
+    "Ugyldig nøkkel -> 403 auth_failed",
+    "Manglende felt -> 400 missing_fields"
+  ],
+  "nye_funksjoner": ["j1k2l3m4"],
+  "kommentar": "Lint-varsler om snake_case funksjoner akseptert pr WordPress coding standard; returstrukturer i API callback beholdt for klar feilhåndtering."
+}

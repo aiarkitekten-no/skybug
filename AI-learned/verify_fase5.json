@@ -1,0 +1,24 @@
+{
+  "fase": "5",
+  "status": "fullført",
+  "implementert": {
+    "lokal_chart_lib": true,
+    "enqueue_kun_stats": true,
+    "beregninger_open_closed": true,
+    "graf_fallback": true
+  },
+  "validering": {
+    "open_bugs_query": "tax_query bug + status publish",
+    "open_features_query": "tax_query feature + status publish",
+    "closed_query": "post_status skybug_closed",
+    "tabell_vs_data": "Manuelle counts samsvarer med data-array i graf init"
+  },
+  "testscenarier": [
+    "Legg til ny bug -> open bugs øker i tabell og graf",
+    "Lukk sak -> closed øker og fjernes fra open counts",
+    "Ingen JS -> canvas fallback tekst vises",
+    "Stats-side eneste som loader chart.min.js"
+  ],
+  "avvik": [],
+  "kommentar": "Minimal intern SimplePie brukt for å unngå ekstern avhengighet. Ingen placeholders."
+}
